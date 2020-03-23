@@ -175,8 +175,8 @@ deleteLinkList(LinkList l, int i, STD *x){
 
 //更新操作
 int updateLinkList(LinkList l, int i, STD x){
-    int pos = 0;
-    LinkList p = l;
+    int pos = 1;
+    LinkList p = l->next;
     while(p->next != NULL && pos < i){
         p = p->next;
         pos++;
@@ -190,9 +190,99 @@ int updateLinkList(LinkList l, int i, STD x){
 
 //获取操作
 int getLinkList(LinkList l, int i, STD *x){
-    LinkList p = l;
-    int pos = 0;
-    while(p->next != NULL && pos < i-1)
+    LinkList p = l->next;
+    int pos = 1;
+    while(p->next != NULL && pos < i){
+        p = p->next;
+        pos++;
+    }
+    if(p->next == NULL || i < pos){
+        printf("位置有问题")；return 0；
+    }
+    *x = p->data;
+    return 1;
 }
 
+//定位操作
+int getlocationLinkList(LinkList l, char *name){
+    LinkList p = l->next;
+    int j = 1;
+    while(p){
+        if(strcmp(p->data.name,name)){
+            p = p->next;
+            j++;
+        }
+        else{
+            return j;
+        }
+    }
+    if(p == NULL){
+        return 0;
+    }
+}
 
+//得到单链表长度
+int linklistlength(LinkList l){
+    int len = 0;
+    LinkList p = l->next;
+    while(p){
+        len++;
+        p = p->next;
+    }
+    return len;
+}
+
+//遍历操作
+int disLinkList(linklist l){
+    LinkList p = l->next;
+    if(p == NULL){
+        printf("没有数据");
+        return 0;
+    }
+    while(p){
+        printf("%10s, %7.2f\n");
+        p = p->next;
+    }
+    return 1;
+}
+
+//头插法
+void frontcreateLinkList(LinkList *l){
+    int n = 0;
+    STD x;
+    LinkList p;
+    char yn;
+    initLinkList(l);
+    do{
+        printf("请输入第%d个学生的姓名和分数，用空格隔开："，++n);
+        scanf("%s%f",&x.name,&x.score);
+        getchar();
+        p = (LinkList)malloc(sizeof(LNode));
+        p->data = x;
+        p->next = (*l)->next;
+        (*l)->next = p;
+        printf("请继续输入？ Y/N:");
+        yn = getchar();
+    }while(yn == 'Y' || yn == 'y');
+}
+
+void rearcreateLinkList(LinkList *l){
+    int n = 0;
+    STD x;
+    LinkList p,R;
+    char yn;
+    initLinkList(l);
+    R = *l;
+    do{
+        printf("请输入第%d个学生的信息"，++n);
+        scanf("%s%d",&x.name,&x.score);
+        getchar();
+        p = (LinkList)malloc(sizeof(LNode));
+        p->data = x;
+        p->next = NULL;
+        R->next = p;
+        R = p;
+        printf("还要继续输入吗？ Y/N:");
+        yn = getchar();
+    }while(yn == 'Y' || yn == 'y');
+}
