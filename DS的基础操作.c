@@ -286,3 +286,143 @@ void rearcreateLinkList(LinkList *l){
         yn = getchar();
     }while(yn == 'Y' || yn == 'y');
 }
+
+//静态链表
+#define MAXSIZE 100
+
+typedef struct{
+    ElemType data;
+    int next;
+}SNode;
+
+typedef struct{
+    SNode sd[MAXSIZE];
+    int SL,AV;
+    int SLinkSize;
+}StaticLink;
+
+//初始化静态链表
+int initSLink(StaticLink *l){
+    l->SL = 0;
+    l->SLinkSize = MAXSIZE;
+    l->sd[0].next = -1;
+    l->AV = 1;
+    for(int i = 1; i < l->SLinkSize-1; i++){
+        l->sd[i].next = i+1;
+    }
+    l->sd[i].next = -1;
+    return 1;
+}
+
+//插入操作
+int insertSList(StaticLink *l, int i, ElemType x){
+    int p,t,j;
+    p = l->SL;
+    j = 0;
+    while(l->sd[p].next != -1 && j<i-1){
+        p = l->sd[p].next;
+        j++;
+    }
+    if(j == i-1){
+        if(l->AV != -1){  //检查空余位置
+            t = l->AV;
+            l->AV = l->sd[t].next;
+            l->sd[t].data = x;
+            l->sd[t].next = l->sd[p].next;
+            l->sd[p].next = t;
+            return 1;
+        }
+        else{
+            printf("没有空余的位置")；return 0；
+        }
+    }
+    else{
+        printf("插入的位置有问题")；return 0；
+    }
+}
+
+//删除操作
+int deleteSList(StaticLink *l, int i, ElemType *x){
+    int p,t,s,j;
+    p = l->SL;
+    j = 0;
+    while(l->sd[p]->next != -1 && j < i-1){
+        p = l->sd[p]->next;
+        j++;
+    }
+    if(j == i-1){
+        t = l->sd[p].next;
+        if(t == -1){
+            printf("删除位置不存在")；return 0;
+        }
+        else{
+            l->sd[p].next = l->sd[t].next;
+            *x = l->sd[t].data;
+        }
+        p = l->AV;
+        if(t < p){
+            l->sd[t].next = l->AV;
+            l->AV = t;
+        }
+        else{
+            while(l->sd[p].next != -1 && l->sd[p].next < t){
+                p = p->sd[p].next;
+            }
+            s = l->sd[p].next;
+            l->sd[t]->next = s;
+            l->sd[p]->next = t;
+            return 1;
+        }
+    }
+    else{
+        printf("删除位置有问题")；return 0;
+    }
+    return 1;
+}
+
+//顺序栈
+
+typedef struct stack{  //第一种使用数组实现
+    ElemType data[MAX];
+    int top;
+    int StackSize;
+}SqStack;
+
+typedef struct stack{  //第二种使用指向数组的指针表示
+    ElemType *data;
+    int top;
+    int StackSize;
+}SqStack;
+
+//初始化栈
+int initStack(SqStack *s, int max){
+    s->data = (SqStack*)malloc(max*sizeof(ElemType));
+    if(s->data == NULL){
+        printf("空间申请失败")；return 0；
+    }
+    s->top = 0;
+    s->StackSize = max;
+    return 1;
+}
+
+//判断栈空
+int SqStackEmpty(SqStack s){
+    if(s.top == -1)return 1;
+    else return 0;
+}
+
+//得到栈顶
+int getSqStack(SqStack s, ElemType *e){
+    if(SqStackEmpty(s)){
+        printf("栈为空")；return 0；
+    }
+    else{
+        *e = s->data[s.top];
+        return 1;
+    }
+}
+
+//求栈的长度
+int SqStackLength(SqStack s){
+    return s->top + 1;
+}
