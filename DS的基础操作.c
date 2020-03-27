@@ -426,3 +426,45 @@ int getSqStack(SqStack s, ElemType *e){
 int SqStackLength(SqStack s){
     return s->top + 1;
 }
+
+//问题描述:二维矩阵中的元素aij 为第i行最小值，且为j列的最大值，称该元素为鞍点，求出A(m*n)矩阵中的所有鞍点
+//解题思路：根据二维数组的结构特点，将二维数组看作一维数组处理
+void saddle(int A[], int m, int n){
+    int i,j,k,min,col;
+    for(i = 0; i<m; i++){
+        min = *(A+i*n);
+        col = 0;
+        for(j = 1; j<n; j++){
+            if(*(A+i*n+j) < min){
+                min = *(A+i*n+j);
+                col = j;
+            }
+        }
+        for(k = 0; k<m; k++){
+            if(*(A+ m*k + col)>min){
+                break;
+            }
+        }
+        if(k == m){
+            printf("%d,%d,%d",i, col, min); //打印鞍点
+        }
+    }
+}
+
+//问题描述：三维矩阵求出最大值
+//解题思路：讲三维数组看作一维数组求解
+int jsmax(int A[], int m, int n, int p){
+    int i, j, k, max = *A;
+    for(i = 0; i<m; i++){
+        for(j = 0; j<n, j++){
+            for(k = 0; k<p; k++){  //三维数组转一维数组地址为 i*n*p+j*p+k
+                if(*(A+i*n*p+j*p+k)>max){
+                    max = *(A+i*n*p+j*p+k);
+                }
+            }
+        }
+    }
+    return max;
+}
+
+//
