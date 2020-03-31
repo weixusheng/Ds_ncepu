@@ -467,4 +467,46 @@ int jsmax(int A[], int m, int n, int p){
     return max;
 }
 
-//
+//二叉树-顺序存储
+#define MAXNODE 100
+typedef ElemType SqBiTree[MAXNODE+1];
+
+//二叉树-链式存储
+typedef struct BiTNode{
+    ElemType data;
+    struct BiTNode *lchild;
+    struct BiTNode *rchild;
+}BiTNode, *BiTree;
+
+//三叉链表
+typedef struct TriTNode{
+    ElemType data;
+    struct TriTNode *lchild;
+    struct TriTNode *rchild;
+    struct TriTNode *parent;
+}TriTNode, *TriTree
+
+//先序遍历-递归
+void preorder(BiTree t){
+    if(t){
+        printf(t->data);
+        preorder(t->lchild);
+        preorder(t->rchild);
+    }
+}
+//中序遍历
+void inorder(BiTree t){
+    if(t){
+        inorder(t->lchild);
+        printf(t->data);
+        inorder(t->rchild);
+    }
+}
+//后序遍历
+void postorder(BiTree t){
+    if(t){
+        postorder(t->lchild);
+        postorder(t->rchild);
+        printf(t->data);
+    }
+}
