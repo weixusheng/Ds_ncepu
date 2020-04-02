@@ -510,3 +510,218 @@ void postorder(BiTree t){
         printf(t->data);
     }
 }
+
+//树的遍历非递归--王道--前序遍历
+void tree_preorder(BiTree t){
+    BiTNode p = t;
+    initStack(S);
+    while(!SqStackEmpty(S) || p){
+        if(p){
+            push(S,p);
+            visit(p);   //前进到最左侧节点，先序中途一直访问
+            p = p->lchild;
+        }
+        else{
+            pop(S,p);   //当左侧无节点时，转向右节点
+            p = p->rchild;
+        }
+    }
+}
+
+//王道中序
+void tree_inorder(BiTree t){
+    BiTNode p = t;
+    initStack(S);
+    while(!SqStackEmpty(S) || p){
+        if(p){
+            push(S,p);
+            p = p->lchild;
+        }
+        else{
+            pop(S,p);
+            visit(p);
+            p= = p->rchild;
+        }
+    }
+}
+
+//后序遍历--使用 lastnode 标记上一个访问的节点
+void tree_postorder(BiTree t){
+    BiTNode p = t;
+    BiTNode lastnode = NULL;
+    initStack(S);
+    while(!SqStackEmpty(S) || p){
+        while(p){
+            push(S,p);
+            p = p->lchild;
+        }
+        pop(S,p);
+        if(p->rchild == NULL || p->rchild == lastnode){
+            visit(p);
+            lastnode = p;
+        }
+        else{
+            p = p->rchild;
+            while(p){
+                push(S,p);
+                p = p->lchild;
+            }
+        }
+    }
+}
+
+//华北电力--任务分析法
+//分析方法:改装stack结构，使其具有task属性,根据每个节点的task来区分对于节点的操作
+typedef struct{
+    BiTree ptr;
+    int task;   //task = 1表示遍历，task = 0表示访问
+}Elemdata;
+
+typedef struct{
+    Elemdata data[MAX];
+    int top;
+}SqStack;
+
+//非递归中序遍历
+void task_inorder(BiTree t){
+    initStack(S);
+    Elemdata e;
+    e.ptr = t;
+    e.task = 1;
+    BiTree p;
+    if(t) push(S,e);
+    while(!SqStackEmpty(S)){
+        pop(S,e);
+        if(e.task == 0){
+            visit(e.ptr);
+        }
+        else{
+            p = e.ptr;
+            e.ptr = p->rchild;
+            if(e.ptr){
+                push(S,e);
+            }
+            e.ptr = p;
+            e.task = 0;
+            push(S,e);
+            e.ptr = p->rchild;
+            e.task = 1;
+            if(e.ptr){
+                push(S,e);
+            }
+        }
+    }
+}
+//非递归前序遍历
+void task_preorder(BiTree t){
+    initStack(S);
+    Elemdata e;
+    e.task = 1;
+    e.ptr = t;
+    BiTree p;
+    if(t) push(S,e);
+    while(!SqStackEmpty(S)){
+        pop(S,e);
+        if(e.task == 0){
+            visit(e.ptr);
+        }
+        else{
+            p = e.ptr;
+            e.task = 1;
+            push(S,e);
+            e.ptr = p->rchild;
+            e.task = 0;
+            if(e.ptr){
+                push(S,e);
+            }
+        }
+    }
+}
+//非递归后序遍历
+void task_postorder(BiTree t){
+    initStack(S);
+    Elemdata e;
+    e.ptr = t;
+    e.task = 1;
+    BiTree p;
+    if(t) push(S,e);
+    while(!SqStackEmpty(S)){
+        pop(S,e);
+        if(e.task == 0){
+            visit(e.ptr);
+        }
+        else{
+            p = e.ptr;
+            e.ptr = p->rchild;
+            e.task = 1;
+            if(e.ptr){
+                push(S,e);
+            }
+            e.ptr = p->lchild;
+            e.task = 1;
+            if(e.ptr){
+                push(S,e);
+            }
+            e.ptr = p;
+            e.task = 0;
+            push(S,e);
+        }
+    }
+}
+
+//华北电力-基于搜索路径的分析法
+//分析方法：对于一个一个节点,如果没有访问则为空,若左子树访问完成,则为"L",如果右子树访问完成则为"R"
+
+BiTree Goleft(BiTree t, SqStack *s, char c[]){  //左子树一直进栈
+    if(!t) return NULL;
+    while(t){
+        push(s,t);
+        c[s->top] = 'L';
+        if(t->lchild == NULL) break;
+        t = t->lchild;
+    }
+    return t;                   //返回最左侧结点
+}
+void NR_postorder(BiTree t){
+    initStack(S);
+    char lrtag[MAX];            //创建标记数组
+    BiTree p;
+    t = Goleft(t,S,lrtag);      //左子树进栈,p为最左侧结点
+    while(t){
+        lrtag[S.top] = 'R';     //第二次访问,改变为"R",紧接着访问"rchild"
+        if(t->rchild){
+            t = Goleft(t->rchild,S,lrtag);
+        }
+        else{
+            while(!SqStackEmpty(S) && lrtag[S.top] == 'R'){
+                pop(S,p);
+                visit(p);
+            }
+        }
+        if(!SqStackEmpty(S)) gettop(S,t);
+        else{
+            t = NULL;
+        }
+    }
+}
+//非递归先序
+void NR_preorder(BiTree t){
+    BiTree p;
+    char lrtag[MAX];
+    initStack(S);
+    if(t == NULL) return;       //空树返回
+    p = t;
+    while(p!= NULL || !SqStackEmpty(S)){
+        while(p!= NULL){        //进栈访问到最左侧结点
+            visit(p);
+            push(S,p);
+            p = p->lchild;
+        }
+        if(SqStackEmpty(S)) return;
+        else{                   //当前不为空栈,出栈当前元素,转向右子树
+            pop(S,p);
+            p = p->rchild;
+        }
+    }
+    printf("\n");
+}
