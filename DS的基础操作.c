@@ -137,7 +137,7 @@ int initLinkList(LinkList *l){
     return 1;
 }
 
-//插入操作
+//插入操作-单链表
 int insertLinkList(LinkList l, int i, STD x){
     LinkList p =l,s;
     int pos = 0;
@@ -155,7 +155,7 @@ int insertLinkList(LinkList l, int i, STD x){
     return 1;
 }
 
-//删除操作
+//删除操作-单链表
 deleteLinkList(LinkList l, int i, STD *x){
     LinkList p = l,q;
     int pos = 0;
@@ -173,7 +173,7 @@ deleteLinkList(LinkList l, int i, STD *x){
     return 1;
 }
 
-//更新操作
+//更新操作-单链表
 int updateLinkList(LinkList l, int i, STD x){
     int pos = 1;
     LinkList p = l->next;
@@ -188,7 +188,7 @@ int updateLinkList(LinkList l, int i, STD x){
     return 1;
 }
 
-//获取操作
+//获取操作-单链表
 int getLinkList(LinkList l, int i, STD *x){
     LinkList p = l->next;
     int pos = 1;
@@ -203,7 +203,7 @@ int getLinkList(LinkList l, int i, STD *x){
     return 1;
 }
 
-//定位操作
+//定位操作-单链表
 int getlocationLinkList(LinkList l, char *name){
     LinkList p = l->next;
     int j = 1;
@@ -232,7 +232,7 @@ int linklistlength(LinkList l){
     return len;
 }
 
-//遍历操作
+//遍历操作-单链表
 int disLinkList(linklist l){
     LinkList p = l->next;
     if(p == NULL){
@@ -246,7 +246,7 @@ int disLinkList(linklist l){
     return 1;
 }
 
-//头插法
+//头插法-单链表
 void frontcreateLinkList(LinkList *l){
     int n = 0;
     STD x;
@@ -266,6 +266,7 @@ void frontcreateLinkList(LinkList *l){
     }while(yn == 'Y' || yn == 'y');
 }
 
+//尾插法-单链表
 void rearcreateLinkList(LinkList *l){
     int n = 0;
     STD x;
@@ -425,6 +426,79 @@ int getSqStack(SqStack s, ElemType *e){
 //求栈的长度
 int SqStackLength(SqStack s){
     return s->top + 1;
+}
+
+//顺序队列-数组
+typedef struct{
+    ElemType data[MAX];
+    int front;
+    int rear;
+    int queueSize;
+}SqQueue;
+
+//初始化-顺序队列
+int initQueue(SqQueue &q){
+    q->front = q->rear = 0;
+    q->queueSize = MAX;
+    return 1;
+}
+
+//判断队空-顺序队列
+int QueueEmpty(SqQueue q){
+    if(q.rear == q.front){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
+//求队列长度-顺序队列
+int QueueLength(SqQueue q){
+    return(q.rear-q.front + q.queueSize)%q.queueSize;       //这里使用的是循环队列(牺牲一个位置)的通用求法
+}
+
+//得到队头-顺序队列
+int GetFront(SqQueue q, ElemType *x){
+    if(q.rear == q.front){
+        printf("为空队列");
+        return 0;
+    }
+    else{
+        x = q.data[q.front];
+        return 1;
+    }
+}
+
+//进队列-顺序队列
+int EnQueue(SqQueue &q, ElemType x){
+    if((q->rear + 1) % q->queueSize == q->front) return 0;     //判断循环队列(牺牲一个位置)满
+    else{
+        q->data[rear] = x;
+        l->rear = (l->rear+1) % q->queueSize;
+        return 1;
+    }
+}
+
+//出队列-顺序队列
+int DeQueue(SqQueue *q, ElemType *x){
+    if(q->rear == q->front){
+        printf("队列为空");
+        return 0;
+    }
+    else{
+        x = q->data[q->front];
+        q->front = (q->front-1) % q->queueSize;
+        return 1;
+    }
+}
+
+//遍历队列-顺序队列
+int QueueTraverse(SqQueue q){
+    ElemType p = q.front;
+    while(p!= (q->rear +1) % q.queueSize){
+        
+    }
 }
 
 //问题描述:二维矩阵中的元素aij 为第i行最小值，且为j列的最大值，称该元素为鞍点，求出A(m*n)矩阵中的所有鞍点
@@ -724,4 +798,9 @@ void NR_preorder(BiTree t){
         }
     }
     printf("\n");
+}
+
+//层序遍历
+void layer_traversal(BiTree t){
+    
 }
