@@ -501,6 +501,26 @@ int QueueTraverse(SqQueue q){
     }
 }
 
+//循环队列
+typedef struct{
+    Elemdata data[MAX];
+    int rear;
+    int front;
+    int length;
+    int size;
+}
+//进队列时q.rear = (q.rear+1) % q.size;
+
+//链栈-结点
+typedef struct qnode{
+    Elemdata data;
+    struct qnode *next;
+}QNode, *QueueLink;
+
+typedef struct{
+
+}
+
 //问题描述:二维矩阵中的元素aij 为第i行最小值，且为j列的最大值，称该元素为鞍点，求出A(m*n)矩阵中的所有鞍点
 //解题思路：根据二维数组的结构特点，将二维数组看作一维数组处理
 void saddle(int A[], int m, int n){
