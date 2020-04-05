@@ -511,14 +511,83 @@ typedef struct{
 }
 //进队列时q.rear = (q.rear+1) % q.size;
 
-//链栈-结点
+//结点-链队列
 typedef struct qnode{
     Elemdata data;
     struct qnode *next;
 }QNode, *QueueLink;
-
+//栈队列类型-链队列
 typedef struct{
+    QueueLink front;
+    QueueLink rear;
+}Qlink;
 
+//初始化-链队列
+int initQueueLink(Qlink *q){
+    q->rear = q->front = (Qlink)malloc(sizeof(QNode));
+    if(q->front == NULL) return 0;
+    q->front->next = NULL;
+    return 1;
+}
+
+//判断队空-链队列
+int QueueLinkEmpty(Qlink q){
+    if(q->rear == front) return 1;
+    else return 0;
+}
+
+//求队列长度-链队列
+int QueueLinkLength(Qlink q){
+    QueueLink p;
+    int n = 0;
+    if(q->front == q->rear) return 0;
+    p = q->rear->next;
+    while(p){
+        n++;
+        p = p->next;
+    }
+    return n;
+}
+
+//得到队头-链队列
+int QueueLinkGetHead(Qlink q, Elemdata *x){
+    if(q->front == q.rear) return 0;
+    x = q->front->next;
+    return 1;
+}
+
+//进队列-链队列
+int EnQueueLink(Qlink *q, Elemdata x){
+    Qlink p = (QueueLink)malloc(sizeof(QNode));
+    if(p == NULL) return 0;
+    p->data = x;
+    p->next = NULL;
+    q->rear->next = p;
+    q->rear = p;
+    return 1;
+}
+
+//出队列-链队列
+int DeQueueLink(Qlink *q, Elemdata *x){
+    Qlink p;
+    if(q->rear = q->front) return 0;
+    x = q->front->next->data;
+    p = q->front->next;
+    q->front->next = p->next;
+    if(q->rear == p){
+        q->rear = q->front;     //保证空队列时都指向头结点
+    }
+    free(p);
+    return 1;
+}
+
+//遍历队列-链队列
+void QueueLinkTraverse(Qlink q){        //不需要返回int,直接void
+    Qlink p = q-front->next;
+    while(p){
+        printf("%s", p->data);
+        p = p->next;
+    }
 }
 
 //问题描述:二维矩阵中的元素aij 为第i行最小值，且为j列的最大值，称该元素为鞍点，求出A(m*n)矩阵中的所有鞍点
@@ -822,5 +891,59 @@ void NR_preorder(BiTree t){
 
 //层序遍历
 void layer_traversal(BiTree t){
-    
+    BiTree p;
+    initQueue(q);
+    if(b){
+        EnQueue(q, b);
+    }
+    while(!QueueEmpty(q)){
+        p = DeQueue(q);
+        visit(p);
+        if(p->lchild){
+            EnQueue(q, p->lchild);
+        }
+        if(p->rchild){
+            EnQueue(q, p->rchild);
+        }
+    }
 }
+
+//字符串根左子树右子树创造一棵树
+void rlr_CreateTree(BiTree *t){
+    scanf("%c", &ch);
+    if(ch == '#') *t = NULL;        //"#"表示空结点
+    else{
+        *t = (BiTree)malloc(sizeof(BiTNode));
+        (*t)->data = ch;
+        rlr_CreateTree(&(*t)->lchild);      //访问指针结点时 &(*t) 重点
+        rlr_CreateTree(&(*t)->rchild);
+    }
+}
+
+//读入边创造二叉链表非递归方法
+void CreateTree(BiTree *t){
+    initQueue(q);
+    *t = NULL;
+    scanf(fa, ch, lrflag);
+    while(ch!= '#'){
+        p = (BiTree)malloc(sizeof(BiTNode));
+        p->data = ch;
+        p->lchild = p->rchild = NULL;       //首先创建结点
+        EnQueue(q,p);       //结点进队列,为写一个结点寻找父节点做准备
+        if(fa == '#'){
+            *t = p;
+        }
+        else{
+            s = QueueLinkGetHead(q);        //寻找父节点
+            while(s->data != s){
+                DeQueue(q);
+                s = QueueLinkGetHead(q);
+            }
+            if(lrtag == 0) s->lchild = p;       //链接父节点
+            else s->rchild = p;
+        }
+        scanf(fa, ch, lrtag);
+    }
+}
+
+//先序和中序确定一个二叉树
