@@ -1282,3 +1282,77 @@ void InsertThrRight(BiThrTree t, BiThrTree p){
 
 #pragma endregion
 
+#pragma region 树和森林
+//双亲表示法
+typedef struct tnode{
+    Elemdata data;
+    int parent;         //父节点的位置
+}PNode;
+
+typedef struct PNode{
+    PNode tree[MAX];            //存放结点的数组
+    int n;          //存放树结点的数量
+    int r;          //存放根结点的位置
+}PTree;
+
+//链式存储-孩子链表
+typedef struct CTNode{          //孩子链表上的结点类型
+    struct CTNode *next;            //下一个孩子的位置
+    int child;          //第一个孩子结点所在的位置
+}CTNode, *ChildPtr;
+
+typedef struct{         //头结点的类型
+    Elemdata data;
+    ChildPtr link;          //孩子链表的头指针
+}CTbox;
+
+typedef struct{         //孩子链表的数据类型
+    CTbox nodes[MAX];
+    int n,r;            //结点数目和根结点的位置
+}ChildList;
+
+//创建孩子链表的方法
+void createPTree(ChildList *t){
+    int i, j, k;
+    ChildPtr p, s;
+    char father, child;
+    printf("请输入节点数:");
+    scanf("%d", &t->n);
+    getchar();
+    printf("请依次输入%d个结点的值",t->n);
+    for(i = 0; i<t->n; i++){
+        scanf(&t->nodes[i]->data);
+        t->nodes[i].link = NULL;
+    }
+    getchar();
+    t->r = 0;
+    printf("格式{双亲,孩子}输入%d个分支{从左至右,从上至下}",t->n-1);
+    for(i = 1; i < t->n-1; i++){
+        scanf(&father, &child);
+        getchar();
+        for(j=0; j<t->n; j++){
+            if(father == t->nodes[j].data) break;           //父结点
+        }
+        if(j > t->n) return;
+        for(k=0; k<t->n; k++){
+            if(child == t->nodes[k].data) break;            //孩子结点
+        }
+        if(k > t->n) return;
+        p = t->nodes[j].link;
+        if(p == null){              //当前头结点还没有孩子结点
+            s = (ChildPtr)malloc(sizeof(CTNode));
+            s->child = k;
+            s->next = NULL;
+            t->nodes[j].link = s;
+        }
+        else{
+            while(p->next) p = p->next;         //寻找在孩子链表中的最后位置
+            s = (ChildPtr)malloc(sizeof(CTNode));
+            s->next = NULL;
+            s->child = k;
+            p->next = s;
+        }
+    }
+}
+
+#pragma endregion
