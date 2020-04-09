@@ -947,3 +947,233 @@ void CreateTree(BiTree *t){
 }
 
 //先序和中序确定一个二叉树
+void CrtBT(BiTree *t, char pre[], char ino[], int ps, int is, int n){
+    if(n == 0){     //pre[]为先序遍历, ino[]为中序遍历, ps为先序遍历第一个元素, is为中序遍历第一个元素
+        *t == NULL;
+    }
+    else{
+        k = search(ino, pre[ps]);       //从中序得到树的中间节点
+        if(k == -1) *t = NULL;
+        else{
+            if(!(*t = (BiTree)malloc(sizeof(BiTNode)))) exit(0);        //申请位置
+            (*t)->data = pre[ps];       //(*t)为此时树的根节点
+            if(k == is) (*t)->lchild = NULL;
+            else{
+                CrtBT(&(*t)->lchild, pre, ino, ps+1, is, k-is);     //存在左子树,递归建立左子树
+            }
+            if(k == is+n-1) (*t)->rchild = NULL;
+            else{
+                CrtBT(&(*t)->rchild, pre, ino, ps+1+k-is, k+1, n-(k-is)-1);
+            }
+        }
+    }
+}
+
+//二叉树遍历算法的应用-求二叉树的深度
+int depth(BiTree t){
+    if(t == NULL){
+        return 0;
+    }
+    else{
+        depl = depth(t->lchild);
+        depr = depth(t->rchild);
+        if(depl>depr) return(depl + 1);
+        else return (depr + 1);
+    }
+}
+
+//二叉树叶子节点的数量
+int leafcount(BiTree t, int *count){
+    if(t == NULL){
+        return 0;
+    }
+    else{
+        leafcount(t->lchild, count);
+        if(t->lchild == NULL && t->rchild == NULL) (*count)++;
+        leafcount(t->rchild, count);
+    }
+}
+
+//求任意结点的祖先
+void search_priorder(BiTree t, Elemdata x){     //基于路径分析法实现-后序遍历
+    SqStack s;
+    initStack(&s);
+    char lrtag[MAX] = "";
+    BiTree t;
+    t = priGoleft(t, &s, lrtag);
+    while(t && t->data != x){
+        lrtag[s.top] = 'R';
+        if(t->rchild) t = priGoleft(t->rchild, &s, lrtag);
+        else{
+            while(!SqStackEmpty(s) && lrtag[s.top] == 'R'){
+                gettop(s, &t);
+                if(t->data == x){
+                    printstack(s);
+                    return;
+                }
+            }
+            if(!SqStackEmpty(s)) gettop(s, &t);
+            else t = NULL;
+        }
+    }
+}
+
+BiTree priGoleft(BiTree t, SqStack *s, char c[]){
+    if(!t){
+        return NULL;
+    }
+    else{
+        while(t){
+            push(s, t);
+            c[s->top] = 'L';
+            if(t == NULL){
+                break;
+            }
+            t = t->lchild;
+        }
+    }
+    return t;
+}
+
+//线索二叉树
+typedef struct BiThrNode{
+    int ltag;
+    struct BiThrNode *lchild;
+    Elemdata data;
+    int rtag;
+    struct BiThrNode *rchild;
+}BiThrNodeType, *BiThrTree;
+
+//基于中序遍历的二叉树-线索化
+void InThreading(BiThrTree p, BiThrTree *pre){
+    if(p){
+        InThreading(p->lchild, pre);
+        if(!p->lchild){     //如果p的左子树为空,则链接到pre,向上建立线索
+            p->ltag = 1;
+            p->lchild = *pre;
+        }
+        else{
+            p->ltag = 0;        //左子树非空,无法建立线索
+        }
+        if(!(*pre)->rchild){        //pre的右子树为空,向下建立线索
+            (*pre)->rtag = 1;
+            (*pre)->rchild = p;
+        }
+        else{
+            (*pre)->rtag = 0;       //pre的右子树非空,无法建立线索
+        }
+        *pre = p;
+        InThreading(p->rchild, pre);
+    }
+}
+
+//创建一个带头结点的中序线索二叉树
+//头结点左指针指向t,右指针指向最后一个结点,二叉树的第一个结点和最后一个结点指向头结点
+int orderThr(BiThrTree *head, BiThrTree t){
+    if(!(*head = (BiThrTree)malloc(sizeof(BiThrNode)))) return 0;   //申请结点失败
+    (*head)->ltag = 0;          //左指针暂时为空
+    (*head)->rtag = 1;
+    (*head)->rchild = *head;            //右指针指向自己(暂时初始化)
+    BiThrTree pre;          //定义pre指针,进行链接线索
+    if(!t){
+        (*head)->rtag = 0;          //空树
+    }
+    else{
+        (*head)->lchild = t;            //左指针指向t
+        pre = *head;            //将头结点变为pre,从而第一个结点与pre链接线索
+        InThreading(BiThrTree t, pre);          //中序线索化t
+        pre->rchild = *head;            //最后链接,
+        pre->rtag = 1;
+        (*head)->rchild = pre;
+    }
+}
+
+//中序线索二叉树上寻找结点p的中序前驱结点
+BiThrTree InPreNode(BiThrTree p){
+    BiThrTree pre;
+    pre = p->lchild;
+    if(p->ltag != 1){
+        while(pre->rtag == 0){          //如果结点有左子树,则前驱结点应该是左子树的最右端结点
+            pre = pre->rchild;
+        }
+    }
+    return pre;
+}
+
+//中序线索二叉树寻找结点p的中序后继结点
+BiThrTree InPostNode(BiThrTree p){
+    BiThrTree post = p->rchild;
+    if(p->rtag != 1){
+        while(post->ltag == 0){         //如果结点有右子树,则后驱结点应该是右子树的最左端结点
+            post = post->lchild;
+        }
+    }
+    return post;
+}
+
+//中序线索二叉树寻找结点p的先序后继结点--很棒(迷)的算法
+/*思想:
+p为非叶子结点:
+    1.如果结点p->ltag = 0,则先序遍历的后继结点即p->lchild
+    2.如果p->ltag = 1,先序后继结点为p->rchild
+p为叶子节点:
+    1.如果p->rchild = *head,则p->rchild为后继结点,因为先序遍历和中序遍历最后一个结点相同,后继也相同
+    2.如果p->rchild != *head,若p->rchild有右子树,直接p = p->rchild->rchild,若p->rchild有右线索,进入循环
+*/
+BiThrNode IPrePostNode(BiThrTree p){
+    BiThrNode post;
+    if(p->ltag == 0;) post = p->lchild;
+    else{
+        post = p;
+        while(post->rtag == 1 && post->rchild != head) post = post->rchild;
+        post = post->rchild;
+    }
+    return post;
+}
+
+//中序线索二叉树寻找结点p的后序前驱结点
+//思想与中序寻找先序后继结点很像,画图即可
+BiThrNode IPostPreNode(BiThrTree p){
+    BiThrNode pre;
+    if(p->rtag == 0) pre = pre->rchild;
+    else{
+        pre = p;
+        while(pre->ltag == 1 && pre->lchild != head) pre = pre->lchild;
+        pre = pre->lchild
+    }
+    return pre;
+}
+
+//在中序线索上查找值为x的结点
+//直接到达第一个结点,或最后一个结点,然后前驱或后继一次访问所有结点
+BiThrNode Search(BiThrTree head, Elemdata x){
+    BiThrNode p = head->lchild;
+    while(p->rtag != 1 && p != head){
+        p = p->lchild;
+    }
+    while(p != head && p->data != x){
+        p = InPostNode(p);      //依次访问后继结点,直到p->data = x
+    }
+    if(p == head){
+        printf("没有找到");
+        return NULL;
+    }
+    else{
+        return p;
+    }
+}
+
+//在中序线索二叉树上更新结点-中序线索二叉树插入右孩子
+void InsertThrRight(BiThrTree t, BiThrTree p){
+    BiThrTree w;
+    p->rchild = t->rchild;
+    p->rtag = t->rtag;
+    p->lchild = s;
+    p->ltag = 1;
+    t->rchild = p;
+    t->rtag = 0;
+    if(p->rtag == 0){           //如果t的右子树为空,则找到t的后继,使其前驱指针指向p;
+        w = InPostNode(t);
+        w->lchild = p;
+    }
+}
