@@ -1199,7 +1199,7 @@ BiThrTree InPreNode(BiThrTree p){
             pre = pre->rchild;
         }
     }
-    return pre;
+    return pre;         //如果没有左子树,则直接是 lchild
 }
 
 //中序线索二叉树寻找结点p的中序后继结点
@@ -1210,7 +1210,20 @@ BiThrTree InPostNode(BiThrTree p){
             post = post->lchild;
         }
     }
-    return post;
+    return post;            //如果没有右子树,则直接是 rchild
+}
+
+//中序线索二叉树寻找结点p的后序前驱结点
+//思想与中序寻找先序后继结点很像,画图即可
+BiThrNode IPostPreNode(BiThrTree p){
+    BiThrNode pre;
+    if(p->rtag == 0) pre = pre->rchild;
+    else{
+        pre = p;
+        while(pre->ltag == 1 && pre->lchild != head) pre = pre->lchild;
+        pre = pre->lchild
+    }
+    return pre;
 }
 
 //中序线索二叉树寻找结点p的先序后继结点--很棒(迷)的算法
@@ -1231,19 +1244,6 @@ BiThrNode IPrePostNode(BiThrTree p){
         post = post->rchild;
     }
     return post;
-}
-
-//中序线索二叉树寻找结点p的后序前驱结点
-//思想与中序寻找先序后继结点很像,画图即可
-BiThrNode IPostPreNode(BiThrTree p){
-    BiThrNode pre;
-    if(p->rtag == 0) pre = pre->rchild;
-    else{
-        pre = p;
-        while(pre->ltag == 1 && pre->lchild != head) pre = pre->lchild;
-        pre = pre->lchild
-    }
-    return pre;
 }
 
 //在中序线索上查找值为x的结点
