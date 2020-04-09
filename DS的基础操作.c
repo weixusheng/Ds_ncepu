@@ -1,7 +1,8 @@
-//线性表 顺序存储
 typedef int ElemType;
-
 #define MAX 100
+
+#pragma region 线性表-数组
+//线性表 顺序存储
 typedef struct //数组实现
 {
     ElemType data[MAX];
@@ -118,6 +119,9 @@ int dispSqList(SqList l){
     return 1;
 }
 
+#pragma endregion
+
+#pragma region 单链表-链式存储
 //链式存储
 typedef struct node{
     ElemType data;
@@ -168,7 +172,7 @@ deleteLinkList(LinkList l, int i, STD *x){
     }
     q = p->next;
     p->next = q->next;
-    x = q->data;
+    *x = q->data;
     free(q);
     return 1;
 }
@@ -287,7 +291,9 @@ void rearcreateLinkList(LinkList *l){
         yn = getchar();
     }while(yn == 'Y' || yn == 'y');
 }
+#pragma endregion
 
+#pragma region 静态链表
 //静态链表
 #define MAXSIZE 100
 
@@ -380,9 +386,10 @@ int deleteSList(StaticLink *l, int i, ElemType *x){
     }
     return 1;
 }
+#pragma endregion
 
+#pragma region 顺序栈
 //顺序栈
-
 typedef struct stack{  //第一种使用数组实现
     ElemType data[MAX];
     int top;
@@ -428,6 +435,90 @@ int SqStackLength(SqStack s){
     return s->top + 1;
 }
 
+#pragma endregion
+
+#pragma region 链栈
+//链栈
+typedef struct snode{
+    Elemdata data;
+    struct snode *next;
+}Snode, *LinkStack;
+
+//初始化-链栈
+LinkStack initLinkStack(LinkStack *s){
+    *s = NULL;
+}
+
+//判断栈空-链栈
+int IsEmptyLinkStack(LinkStack s){
+    if(s == NULL){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+
+}
+
+//得到栈顶-链栈
+int LinkStackGetTop(LinkStack s, Elemdata *x){
+    if(s == NULL) return 0;
+    else{
+        *x = s->data;
+        return 1;
+    }
+}
+
+//求栈的长度-链栈
+int LinkStackLength(LinkStack s){
+    int count = 0;
+    while(s){
+        s = s->next;
+        count++;
+    }
+    return count;
+}
+
+//进栈-链栈
+int LinkStackPush(LinkStack *s, Elemdata x){
+    LinkStack p = (LinkStack)malloc(sizeof(Snode));
+    if(!p){
+        return 0;
+    }
+    p->data = x;
+    p->next = *s;
+    *s = p;
+    return 1;
+}
+
+//出栈-链栈
+int LinkStackPop(LinkStack *s, Elemdata *x){
+    LinkStack p = *s;
+    if(*s == null){
+        return 0;
+    }
+    else{
+        *x = *s->data;
+        *s = (*s)->next;
+        free(p);
+        return 1;
+    }
+}
+
+//遍历-链栈
+int LinkStackTraverse(LinkStack s){
+    LinkStack p = s;
+    if(s == NULL) return 0;
+    while(p){
+        printf("%d", p->data);
+        p = p->next;
+    }
+    return 1;
+}
+
+#pragma endregion
+
+#pragma region 顺序队列
 //顺序队列-数组
 typedef struct{
     ElemType data[MAX];
@@ -465,7 +556,7 @@ int GetFront(SqQueue q, ElemType *x){
         return 0;
     }
     else{
-        x = q.data[q.front];
+        *x = q.data[q.front];
         return 1;
     }
 }
@@ -487,7 +578,7 @@ int DeQueue(SqQueue *q, ElemType *x){
         return 0;
     }
     else{
-        x = q->data[q->front];
+        *x = q->data[q->front];
         q->front = (q->front-1) % q->queueSize;
         return 1;
     }
@@ -510,7 +601,9 @@ typedef struct{
     int size;
 }
 //进队列时q.rear = (q.rear+1) % q.size;
+#pragma endregion
 
+#pragma region 链队列
 //结点-链队列
 typedef struct qnode{
     Elemdata data;
@@ -552,7 +645,7 @@ int QueueLinkLength(Qlink q){
 //得到队头-链队列
 int QueueLinkGetHead(Qlink q, Elemdata *x){
     if(q->front == q.rear) return 0;
-    x = q->front->next;
+    *x = q->front->next;
     return 1;
 }
 
@@ -571,7 +664,7 @@ int EnQueueLink(Qlink *q, Elemdata x){
 int DeQueueLink(Qlink *q, Elemdata *x){
     Qlink p;
     if(q->rear = q->front) return 0;
-    x = q->front->next->data;
+    *x = q->front->next->data;
     p = q->front->next;
     q->front->next = p->next;
     if(q->rear == p){
@@ -590,6 +683,9 @@ void QueueLinkTraverse(Qlink q){        //不需要返回int,直接void
     }
 }
 
+#pragma endregion
+
+#pragma region 多维矩阵
 //问题描述:二维矩阵中的元素aij 为第i行最小值，且为j列的最大值，称该元素为鞍点，求出A(m*n)矩阵中的所有鞍点
 //解题思路：根据二维数组的结构特点，将二维数组看作一维数组处理
 void saddle(int A[], int m, int n){
@@ -630,6 +726,9 @@ int jsmax(int A[], int m, int n, int p){
     return max;
 }
 
+#pragma endregion
+
+#pragma region 二叉树
 //二叉树-顺序存储
 #define MAXNODE 100
 typedef ElemType SqBiTree[MAXNODE+1];
@@ -1035,6 +1134,9 @@ BiTree priGoleft(BiTree t, SqStack *s, char c[]){
     return t;
 }
 
+#pragma endregion
+
+#pragma region 线索二叉树
 //线索二叉树
 typedef struct BiThrNode{
     int ltag;
@@ -1177,3 +1279,6 @@ void InsertThrRight(BiThrTree t, BiThrTree p){
         w->lchild = p;
     }
 }
+
+#pragma endregion
+
