@@ -1355,4 +1355,149 @@ void createPTree(ChildList *t){
     }
 }
 
+
+//孩子兄弟链表表示法
+typedef struct CSNode{
+    Elemdata data;
+    struct CSNode *fch, *nsib;
+}CSNode, *CStree;
+
+//创建孩子兄弟树
+void createCSTree(CStree *t){
+    initQueue(q);
+    *t = NULL;
+    scanf(fa, ch);
+    while(ch != '#'){
+        p = (CStree)malloc(sizeof(CSNode));
+        p->data = ch;
+        p->fch = p->nsib = NULL;
+        EnQueue(Q, p);
+        if(fa == '#') *t = p;
+        while(s->data != fa){
+            EnQueue(Q);
+            s = QueueLinkGetHead(Q);
+        }
+        if(s->fch == NULL){
+            s->fch = p;
+            r = p;
+        }
+        else{
+            r->nsib = p;
+            r = p;
+        }
+        scanf(fa, ch);
+    }
+}
+
+//树的遍历-先根遍历
+void preorderTree(CStree t){
+    if(t){
+        printf(t->data);
+        preorderTree(t->fch);
+        preorderTree(t->nsib);
+    }
+    else{
+        return;
+    }
+}
+
+//树的遍历-后根遍历
+void postorderTree(CStree t){
+    if(t){
+        postorderTree(t->fch);
+        postorderTree(t->nsib);
+        printf(t->data);
+    }
+    else{
+        return;
+    }
+}
+
+//树的结点查找
+void findTree(CStree t, char kval, CStree *p){          //寻找值为 kval 的结点
+    if(t){
+        if(strcmp(kval, t->data) == 0){
+            *p = t;
+            return;
+        }
+        else{
+            findTree(t->fch, kval, p);
+            findTree(t->nsib, kval, p);
+        }
+    }
+}
+
+//树的结点的插入
+int insertTree(CStree *t, char father, char child){         //父结点的值为 father,需要插入的孩子结点值为 child
+    CStree p = NULL, q, s;
+    findTree(t, father, &p);
+    if(p){
+        s = (CStree)malloc(sizeof(CSNode));
+        strcpy(s->data, child);
+        s->fch = s->nsib = NULL;
+        if(!p->fch){
+            p->fch = s;
+        }
+        else{
+            q = p->fch;
+            while(q->nsib){
+                q = q->nsib;
+            }
+            q->nsib = s;
+        }
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
+//树的结点的删除
+int deleteTree(CStree *t, char fa, char ch){
+    CStree pfa = NULL, pch = NULL;
+    if(strcmp(fa, "#") == 0){
+        postdelete(*t);         //递归删除树(根结点为 t )
+        *t = NULL;
+        return;
+    }
+    else{
+        findTree(*t, fa, &pfa);
+        findTree(*t, ch, &pch);
+        if(pfa == NULL || pch == NULL){
+            return;
+        }
+        else{
+            if(pfa->fch != pch){
+                pfa = pfa->fch;
+                while(pfa){
+                    if(pfa->nsib == pch) break;
+                    pfa = pfa->nsib;            //这里得到 pfa 为 pch 的前驱结点
+                }
+            }
+        }
+        delete(pch, pfa);           //在删除 pch 的子树时需要 pch 的前驱,用来重新链接其他子树
+    }
+}
+
+void delete(CStree p, CStree f){
+    if(f->fch == p){
+        f->fch = p->nsib;
+        p->nsib = NULL;         //重新链接子树
+        postdelete(p);
+    }
+    if(f->nsib == p){
+        f->nsib = f->nsib;
+        p->nisb = NULL;
+        postdelete(p);
+    }
+}
+
+void postdelete(CStree t){
+    if(t){
+        postdelete(t->fch);
+        postdelete(t->nsib);
+        free(p);
+    }
+}
+
 #pragma endregion
