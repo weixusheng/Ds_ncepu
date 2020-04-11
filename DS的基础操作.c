@@ -402,6 +402,7 @@ typedef struct stack{  //第二种使用指向数组的指针表示
     int StackSize;
 }SqStack;
 
+//下列实现方式使用第二种表示方法
 //初始化栈
 int initStack(SqStack *s, int max){
     s->data = (SqStack*)malloc(max*sizeof(ElemType));
@@ -425,7 +426,7 @@ int getSqStack(SqStack s, ElemType *e){
         printf("栈为空")；return 0；
     }
     else{
-        *e = s->data[s.top];
+        *e = s.data[s.top];
         return 1;
     }
 }
@@ -433,6 +434,43 @@ int getSqStack(SqStack s, ElemType *e){
 //求栈的长度
 int SqStackLength(SqStack s){
     return s->top + 1;
+}
+
+//进栈-顺序栈
+int SqStackPush(SqStack *s, int e){
+    if(s->StackSize == s->top+1){
+        return 0;
+    }
+    s->tpp++;
+    s->data[s->top] = e;
+    return 1;
+}
+
+//出栈-顺序栈
+int SqStackPop(SqStack *s, int *e){
+    if(s->top == -1){
+        return 0;
+    }
+    else{
+        *e = s->data[s->top];
+        s->top--;
+    }
+    return 1;
+}
+
+//遍历-顺序栈
+void SqStackTraverse(SqStack s){
+    int x;
+    if(s.top == -1){
+        printf("栈空");
+        return 0;
+    }
+    else{
+        for(k = s.top; k>=0; k--){
+            printf("%d", s.data[k]);
+        }
+        return 1;
+    }
 }
 
 #pragma endregion
@@ -1497,6 +1535,126 @@ void postdelete(CStree t){
         postdelete(t->fch);
         postdelete(t->nsib);
         free(p);
+    }
+}
+
+
+//树的深度
+int depthTree(BiThrTree t){
+    if(t == NULL){
+        return 0;
+    }
+    else{
+        d1 = depthTree(t->fch);
+        d2 = depthTree(t->nsib);
+        return d1+1 > d2 ? d1+1:d2; 
+    }
+}
+
+//求二叉树中的所有叶子节点的路径
+void AllBitreePath(BiTree t, stack *s){
+    while(t){
+        SqStackPush(s, t->data);
+        if(!t-> lchild && !t->rchild){
+            SqStackTraverse(*s);
+        }
+        else{
+            AllBitreePath(t->lchild, *s);
+            AllBitreePath(t->rchild, *s);
+        }
+        SqStackPop(s);
+    }
+}
+
+//求树中的所有叶子节点的路径
+void AllTreePath(CStree t, SqStack *s){
+    while(t){
+        SqStackPush(s, t->data);
+        if(!t->fch){
+            SqStackTraverse(s);
+        }
+        else{
+            AllTreePath(t->fch, *s);
+        }
+        SqStackPop(s);
+        t = t->nsib;
+    }
+}
+
+#pragma endregion
+
+#pragma region 哈夫曼树
+//类型定义 
+typedef struct{
+    char data;
+    int weight;
+    int parent, lch, rch;
+}NodeType;
+typedef NodeType HufTree[M+1];
+typedef char **HufCode;
+
+void huff_tree(int w[], int n, HufTree ht){
+    int i, s1, s2;
+    fot(i = 1; i<2*n; i++){
+        if(i>=1; && i<=n){
+            ht[i].weight = w[i-1];
+        }
+        else{
+            ht[i].weight = 0;
+        }
+        ht[i].parent = 0;           //初始化结点
+        ht[i].lch = 0;
+        ht[i],rch = 0;
+        for(i = n+1; i<2*n, i++){
+            select(ht, n, &s1, &s2);            //从结点中挑选两个最小权值结点
+            ht[i].weight = ht[s1].weight + ht[s2].weight;
+            ht[i].lch = s1;         //建立哈夫曼
+            ht[i].rch = s2;
+            ht[s1].parent = i;
+            ht[s2].parent = i;
+        }
+    }
+}
+
+void seletc(HufTree ht, int n, int *s1, int *s2){
+    int i, min;
+    for(min = 100, i = 1; i<2*n; i++){
+        if(ht[i].parent == 0 && ht[i].weight != 0 && ht[i].weight <= min){
+            min = ht[i].weight;
+            *s1 = i;
+        }
+    }
+    for(min = 100, i = 1; i<2*n; i++){
+        if(ht[i],parent == 0 && ht[i].weight != 0 && i != s1 && ht[i].weight <=min){
+            min = ht[i].weight;
+            *s2 = i
+        }
+    }
+}
+
+//求叶子结点的哈夫曼编码
+void hufcode(HufCode *hcd, HufTree ht, int n){
+    char *cd;
+    int i, start, c, f;
+    *hcd = (HufCode)malloc((n+1)*sizeof(*char));
+    cd = (char *)malloc(n*sizeof(char));
+    for(i = 1; i<=n; i++){
+        cd[n-1] = '\0';
+        start = n-1;
+        c = i;
+        f = ht[c].parent;
+        while(f){
+            if(ht[f].lch == c){
+                cd[--start] = '0';
+            }
+            else{
+                cs[--start] = '1';
+            }
+            c = f;
+            f = ht[f].parent;
+        }
+        (*hcd)[i] = (char *)malloc((n-start)*sizeof(char));
+        strcpy((*hcd)[i], &cd[start]);
     }
 }
 
