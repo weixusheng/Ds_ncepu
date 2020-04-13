@@ -1588,7 +1588,7 @@ void AllTreePath(CStree t, SqStack *s){
 #pragma endregion
 
 #pragma region 哈夫曼树
-//类型定义 
+//哈夫曼类型定义 
 typedef struct{
     char data;
     int weight;
@@ -1662,5 +1662,143 @@ void hufcode(HufCode *hcd, HufTree ht, int n){
         strcpy((*hcd)[i], &cd[start]);      //使用char数组指针,一直到'\0'结束
     }
 }
+
+#pragma endregion
+
+#pragma region 图
+
+//图的邻接矩阵
+#define VNUM 20
+typedef struct{
+    VertexType vexs[VNUM];          //存储顶点信息
+    int arcs[VNUM][VUM];            //存储顶点关系
+    int vexNum, arcNum;         //存储顶点数,弧数
+}MGraph;
+
+//网的邻接矩阵
+typedef struct{
+    VertexType vexs[VNUM];
+    WeightType arcs[VNUM][VNUM];            //顶点的关系,边的权重
+    int vexNum, arcNum;         //顶点数,弧数
+}NetGraph;
+
+//创建图的邻接矩阵
+void crtMGraph(MGraph *G){
+    int i, j, k;
+    scanf("%d%d", &G->vexNum, &G->arcNum);
+    for(i = 0; i<G->vexNum; i++){
+        scanf(&G->vexs[i]);
+    }
+    for(i = 0; i<G->vexNum; ++i){
+        for(j = 0; j<G->vexNum; ++j){
+            scanf(&G->vexs[i][j]);
+        }
+    }
+    for(k = 0; k<G->arcNum; ++k){
+        scanf("%d%d", &i, &j);
+        G->arcs[i-1][j-1] = 1;
+        G->arcs[j-1][i-1] = 1;
+    }
+}
+
+//图的邻接表-边结点的定义
+typedef struct ArcNode{
+    int adjvex;
+    struct adjvex *nextArc;
+    [WeightType info;]          //视情况而定
+}ArcNode;
+//图的邻接表-表头结点的定义
+typedef struct VertexNode{
+    Elemdata vertex;
+    ArcNode *firstArc;
+}VertexNode;
+//图的邻接表-总体类型
+typedef struct ALGraph{
+    VertexNode adjlist[MAX];
+    int vexNum, arcNum;
+}ALGraph;
+
+//创建有向图的邻接表
+void BuildAdjlist(ALGraph *g){
+    int i, j;
+    scanf("%d%d", &g->vexNum, &g->arcNum);
+    for(i = 0; i<g->vexNum; i++){
+        scanf(g->adjlist[i].vertex);
+        g->adjlist[i].firstArc = NULL;
+    }
+    for(k = 0; k<g->arcNum; k++){
+        scanf(&i, &j);
+        p = (ArcNode*)malloc(sizeof(ArcNode));
+        p->adjvex = j-1;
+        p->nextArc = g->adjlist[i-1].firstArc;
+        g->adjlist[i-1].firstArc = p;
+    }
+}
+
+//十字链表结点类型
+typedef struct Arcbox{
+    int tailvex, headvex;           //边的前驱后继
+    struct ArcBox *hlink, *tlink;
+    infoType *info;
+}Arcbox;
+//十字链表表头结点
+typedef struct VexNode{
+    VertexType data;
+    Arcbox *firstin, *firstout;         //第一条入弧和出弧
+}VexNode;
+//十字链表类型
+typedef struct{
+    VexNode xlist[MAX];
+    int vexNum, arcNum;
+}OLGraph;
+
+//无向图的邻接多重表-边结点
+typedef struct Ebox{
+    int mark;
+    int ivex, jvex;
+    struct Ebox *ilink, *jlink;
+    infoType *info;
+}Ebox;
+//无向图邻接多重表-顶点结点
+typedef struct VexBox{
+    VertexType data;
+    Ebox *firstedge;
+}VexBox;
+//无向图邻接多重表类型
+typedef struct{
+    VexBox adjmulist[MAX];
+    int vexNum, arcNum;
+}AMLGraph;
+
+//连通图的深度优先遍历
+void DFS(Graph G, int v){
+    SqStack s;
+    initStack(&s);
+    int visited[100];
+    int i;
+    for(i = 0; i<G.vexNum; i++){
+        visited[i] = 0;
+    }
+    printf(v);
+    visited[v] = 1;
+    LinkStackPush(s, v);
+    while(!IsEmptyLinkStack(s)){
+        k = LinkStackGetTop(s);
+        w = FirstAdjVex(G, k);
+        while(w){
+            if(visited[w] == 0){            //没有访问过
+                printf(w);
+                visited[w] = 1;
+                SqStackPush(s, w);
+                break;
+            }
+            w = NextAdjVex(G, k, w);            //访问过,查找next
+        }
+        if(!w){         //
+            SqStackPop(s);
+        }
+    }
+}
+
 
 #pragma endregion
