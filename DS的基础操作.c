@@ -415,13 +415,13 @@ int initStack(SqStack *s, int max){
 }
 
 //判断栈空
-int SqStackEmpty(SqStack s){
+int SqStackEmptyGetTop(SqStack s){
     if(s.top == -1)return 1;
     else return 0;
 }
 
 //得到栈顶
-int getSqStack(SqStack s, ElemType *e){
+int SqStack(SqStack s, ElemType *e){
     if(SqStackEmpty(s)){
         printf("栈为空")；return 0；
     }
@@ -998,7 +998,7 @@ void NR_postorder(BiTree t){
                 visit(p);
             }
         }
-        if(!SqStackEmpty(S)) gettop(S,t);
+        if(!SqStackEmpty(S)) SqStackEmptyGetTop(S,t);
         else{
             t = NULL;
         }
@@ -1143,13 +1143,13 @@ void search_priorder(BiTree t, Elemdata x){     //基于路径分析法实现-�
         if(t->rchild) t = priGoleft(t->rchild, &s, lrtag);
         else{
             while(!SqStackEmpty(s) && lrtag[s.top] == 'R'){
-                gettop(s, &t);
+                SqStackEmptyGetTop(s, &t);
                 if(t->data == x){
                     printstack(s);
                     return;
                 }
             }
-            if(!SqStackEmpty(s)) gettop(s, &t);
+            if(!SqStackEmpty(s)) SqStackEmptyGetTop(s, &t);
             else t = NULL;
         }
     }
@@ -1413,10 +1413,10 @@ void createCSTree(CStree *t){
         EnQueue(Q, p);
         if(fa == '#') *t = p;           //此时为根节点
         else{
-            s = LinkStackGetTop(Q);
+            s = QueueLinkGetHead(Q);
             while(s->data != fa){           //找到父节点位置
                 DeQueue(Q);
-                s = LinkStackGetTop(Q);
+                s = QueueLinkGetHead(Q);
                 if(s->fch == NULL){         //如果没有孩子结点,直接链接为第一个孩子
                     s->fch = p;
                     r = p;          //r存储当前孩子结点位置
@@ -1770,7 +1770,20 @@ typedef struct{
     int vexNum, arcNum;
 }AMLGraph;
 
-//连通图的深度优先遍历
+//连通图的深度优先遍历-递归
+void DFSRecursion(Graph g, int v, int visited[]){
+    printf(v);
+    visited[v] = 1;
+    w = FirstAdjVex(g, v);
+    while(w){
+        if(visited[w] == 0){
+            DFSRecursion(g, w, visited);
+        }
+        w = NextAdjVex(g, w);
+    }
+}
+
+//连通图的深度优先遍历-非递归
 void DFS(Graph G, int v){
     SqStack s;
     initStack(&s);
@@ -1781,9 +1794,9 @@ void DFS(Graph G, int v){
     }
     printf(v);
     visited[v] = 1;
-    LinkStackPush(s, v);
+    SqStackPush(s, v);
     while(!IsEmptyLinkStack(s)){
-        k = LinkStackGetTop(s);
+        k = SqStackEmptyGetTop(s);
         w = FirstAdjVex(G, k);
         while(w){
             if(visited[w] == 0){            //没有访问过
@@ -1800,5 +1813,111 @@ void DFS(Graph G, int v){
     }
 }
 
+//邻接矩阵连通图-深度优先遍历递归
+void DFSR_MGraph(MGraph g, int v, visited[]){
+    printf(g.vertex[v]);
+    visited[v] = 1;
+    for(j = 0; j<g.vexNum; j++){
+        if(g.arcNum[v][j] == 1 && visited[j] == 0){
+            DFSR_MGraph(g, j, visited);
+        }
+    }
+}
+
+//邻接表连通图-深度优先非递归遍历
+void DFS_ALGraph(ALGraph g, int v){
+    int i;
+    SqStack s;
+    initStack(s);
+    int visited[100];
+    for(i = 0; i<g.vexNum; i++){
+        visited[i] = 0;
+    }
+    printf(G.adjlist[v].vertex);
+    visited[v] = 1;
+    SqStackPush(s, v);
+    while(!IsEmptyLinkStack(s)){
+        k = SqStackEmptyGetTop(s);
+        p = g.adjlist[k].firstArc;
+        while(p){
+            if(p && visited[p->adjvex] == 0){
+                printf(g.adjlist[p->adjvex].vertex);
+                visited[p->adjvex] = 1;
+                SqStackPush(s, p->adjvex);
+                break;
+            }
+            p = p->nextArc;
+        }
+        if(!p){
+            SqStackPop(s);
+        }
+    }
+}
+
+//邻接表连通图的广度优先遍历
+void BFSRecursion(ALGraph g, int v){
+    initQueue(q);
+    printf(g.adjlist[v].vertex);
+    visited[v] = 1;
+    EnQueue(q, v);
+    while(!QueueEmpty){
+        v = DeQueue(q);
+        p = g.adjlist[v].firstArc;
+        while(!p){
+            w = p->adjvex;
+            if(visited[w] == 0){
+                printf(g.adjlist[w].vertex);
+                visited[w] == 1;
+                EnQueue(q, w);
+            }
+            p = p->nextArc;
+        }
+    }
+}
+
+//非连通图的深度遍历
+void TraverseGraph(Graph g){
+    int visited[100];
+    for(v = 0; v<g.vexNum; v++){
+        visited[v] = 0;
+    }
+    for(v = 0; v<g.vexNum; v++){
+        if(visited[v] == 0){
+            DFS(g, v);
+        }
+    }
+}
+
+//图的遍历算法应用
+//求图中包含所有顶点的简单路径
+void Hamilton(MGraph g){
+    int i;
+    int visited[100];
+    for(i = 0; i<vexNum; i++){
+        visited[i] = 0;
+    }
+    int n = 0;
+    for(i = 0; i<g.vexNum; i++){
+        if(!visited[i]){
+            DFS_h(g, i, path, &n);
+        }
+    }
+}
+
+void DFS_h(MGraph g, int i, int path[], int visited[], int *n){
+    visited[i] = 1;
+    path[*n] = i;
+    (*n)++;
+    if((*n) == g.vexNum){
+        printf(path);
+    }
+    fot(j = 0; j<g.vexNum; j++){
+        if(g.arcs[i][j] && visited[j]){
+            DFS_h(g, j, path, n);
+        }
+    }
+    visited[i] = 0;
+    (*n)--;
+}
 
 #pragma endregion
