@@ -415,13 +415,13 @@ int initStack(SqStack *s, int max){
 }
 
 //判断栈空
-int SqStackEmptyGetTop(SqStack s){
+int SqStackEmpty(SqStack s){
     if(s.top == -1)return 1;
     else return 0;
 }
 
 //得到栈顶
-int SqStack(SqStack s, ElemType *e){
+int SqStackGetTop(SqStack s, ElemType *e){
     if(SqStackEmpty(s)){
         printf("栈为空")；return 0；
     }
@@ -998,7 +998,7 @@ void NR_postorder(BiTree t){
                 visit(p);
             }
         }
-        if(!SqStackEmpty(S)) SqStackEmptyGetTop(S,t);
+        if(!SqStackEmpty(S)) SqStackGetTop(S,t);
         else{
             t = NULL;
         }
@@ -1143,13 +1143,13 @@ void search_priorder(BiTree t, Elemdata x){     //基于路径分析法实现-�
         if(t->rchild) t = priGoleft(t->rchild, &s, lrtag);
         else{
             while(!SqStackEmpty(s) && lrtag[s.top] == 'R'){
-                SqStackEmptyGetTop(s, &t);
+                SqStackGetTop(s, &t);
                 if(t->data == x){
                     printstack(s);
                     return;
                 }
             }
-            if(!SqStackEmpty(s)) SqStackEmptyGetTop(s, &t);
+            if(!SqStackEmpty(s)) SqStackGetTop(s, &t);
             else t = NULL;
         }
     }
@@ -1795,8 +1795,8 @@ void DFS(Graph G, int v){
     printf(v);
     visited[v] = 1;
     SqStackPush(s, v);
-    while(!IsEmptyLinkStack(s)){
-        k = SqStackEmptyGetTop(s);
+    while(!SqStackEmpty(s)){
+        k = SqStackGetTop(s);
         w = FirstAdjVex(G, k);
         while(w){
             if(visited[w] == 0){            //没有访问过
@@ -1824,21 +1824,21 @@ void DFSR_MGraph(MGraph g, int v, visited[]){
     }
 }
 
-//邻接表连通图-深度优先非递归遍历
+//邻接表连通图-深度优先非递归遍历-使用栈
 void DFS_ALGraph(ALGraph g, int v){
     int i;
     SqStack s;
     initStack(s);
     int visited[100];
-    for(i = 0; i<g.vexNum; i++){
+    for(i = 0; i<g.vexNum; i++){            //初始化visited数组
         visited[i] = 0;
     }
-    printf(G.adjlist[v].vertex);
+    printf(G.adjlist[v].vertex);            //访问第一个节点
     visited[v] = 1;
     SqStackPush(s, v);
-    while(!IsEmptyLinkStack(s)){
-        k = SqStackEmptyGetTop(s);
-        p = g.adjlist[k].firstArc;
+    while(!SqStackEmpty(s)){
+        k = SqStackGetTop(s);
+        p = g.adjlist[k].firstArc;          //获得栈顶结点的第一条边
         while(p){
             if(p && visited[p->adjvex] == 0){
                 printf(g.adjlist[p->adjvex].vertex);
@@ -1846,31 +1846,31 @@ void DFS_ALGraph(ALGraph g, int v){
                 SqStackPush(s, p->adjvex);
                 break;
             }
-            p = p->nextArc;
+            p = p->nextArc;            //下一条边
         }
         if(!p){
-            SqStackPop(s);
+            SqStackPop(s);          //没有相连结点可以访问,出栈此时结点
         }
     }
 }
 
-//邻接表连通图的广度优先遍历
+//邻接表连通图的广度优先遍历-使用队列
 void BFSRecursion(ALGraph g, int v){
     initQueue(q);
     printf(g.adjlist[v].vertex);
     visited[v] = 1;
     EnQueue(q, v);
-    while(!QueueEmpty){
+    while(!QueueEmpty){         //对队列元素执行广度优先
         v = DeQueue(q);
-        p = g.adjlist[v].firstArc;
+        p = g.adjlist[v].firstArc;          //得到队头的第一条边
         while(!p){
-            w = p->adjvex;
-            if(visited[w] == 0){
+            w = p->adjvex;          //获得边指向的结点
+            if(visited[w] == 0){            //此时尚未访问,访问该节点
                 printf(g.adjlist[w].vertex);
                 visited[w] == 1;
-                EnQueue(q, w);
+                EnQueue(q, w);          //进栈该节点
             }
-            p = p->nextArc;
+            p = p->nextArc;         //结点的下一条边
         }
     }
 }
@@ -1878,10 +1878,10 @@ void BFSRecursion(ALGraph g, int v){
 //非连通图的深度遍历
 void TraverseGraph(Graph g){
     int visited[100];
-    for(v = 0; v<g.vexNum; v++){
+    for(v = 0; v<g.vexNum; v++){            //初始化visited数组
         visited[v] = 0;
     }
-    for(v = 0; v<g.vexNum; v++){
+    for(v = 0; v<g.vexNum; v++){            //所有结点执行dfs
         if(visited[v] == 0){
             DFS(g, v);
         }
@@ -1893,11 +1893,11 @@ void TraverseGraph(Graph g){
 void Hamilton(MGraph g){
     int i;
     int visited[100];
-    for(i = 0; i<vexNum; i++){
+    for(i = 0; i<vexNum; i++){          //初始化数组
         visited[i] = 0;
     }
     int n = 0;
-    for(i = 0; i<g.vexNum; i++){
+    for(i = 0; i<g.vexNum; i++){        //将所有结点都进行遍历操作
         if(!visited[i]){
             DFS_h(g, i, path, &n);
         }
@@ -1908,16 +1908,16 @@ void DFS_h(MGraph g, int i, int path[], int visited[], int *n){
     visited[i] = 1;
     path[*n] = i;
     (*n)++;
-    if((*n) == g.vexNum){
+    if((*n) == g.vexNum){           //满足条件输出路径
         printf(path);
     }
     fot(j = 0; j<g.vexNum; j++){
-        if(g.arcs[i][j] && visited[j]){
+        if(g.arcs[i][j] && visited[j]){         //递归执行dfs
             DFS_h(g, j, path, n);
         }
     }
-    visited[i] = 0;
-    (*n)--;
+    visited[i] = 0;         //此时所有子结点都访问完成,向上一级继续访问
+    (*n)--;         //路径结点数-1
 }
 
 #pragma endregion
