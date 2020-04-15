@@ -1807,7 +1807,7 @@ void DFS(Graph G, int v){
             }
             w = NextAdjVex(G, k, w);            //访问过,查找next
         }
-        if(!w){         //
+        if(!w){         //当前结点访问完成,回溯上一个节点
             SqStackPop(s);
         }
     }
@@ -1818,7 +1818,7 @@ void DFSR_MGraph(MGraph g, int v, visited[]){
     printf(g.vertex[v]);
     visited[v] = 1;
     for(j = 0; j<g.vexNum; j++){
-        if(g.arcNum[v][j] == 1 && visited[j] == 0){
+        if(g.arcs[v][j] == 1 && visited[j] == 0){
             DFSR_MGraph(g, j, visited);
         }
     }
@@ -1863,10 +1863,9 @@ void BFSRecursion(ALGraph g, int v){
     while(!QueueEmpty){         //对队列元素执行广度优先
         v = DeQueue(q);
         p = g.adjlist[v].firstArc;          //得到队头的第一条边
-        while(!p){
-            w = p->adjvex;          //获得边指向的结点
+        while(p){
             if(visited[w] == 0){            //此时尚未访问,访问该节点
-                printf(g.adjlist[w].vertex);
+                printf(g.adjlist[p->adjvex].vertex);
                 visited[w] == 1;
                 EnQueue(q, w);          //进栈该节点
             }
@@ -1918,6 +1917,98 @@ void DFS_h(MGraph g, int i, int path[], int visited[], int *n){
     }
     visited[i] = 0;         //此时所有子结点都访问完成,向上一级继续访问
     (*n)--;         //路径结点数-1
+}
+
+//判断图中是否存在环-基于深度优先
+void DFSloop(MGraph g, int i, int visited[]){
+    visited[i] = 1;
+    for(int di=0, vi=0, j=0; j<g.vexNum; j++){
+        if(g.arcs[i][j]){
+            di++;
+            if(visited[j]){
+                vi++;
+            }
+        }
+    }
+    if(di == vi && di!= 1){
+        printf("有回路");
+        return;
+    }
+    for(j=0; j<g.arcNum; j++){
+        if(g.arcs[i][j] && visited[j] == 0){
+            DFSloop(g, j, visited);
+        }
+    }
+}
+
+//求无向图的顶点a到i之间的简单路径
+void DFSSearchPath(MGraph g, int v, int s, char path[], int visited[], int *found){
+    visited[v-1] = 1;
+    append(path, g.vertex[v-1]);
+    for(j = 0; j<g.vexNum && (*found); j++){
+        if(g.arcs[v-1][j] == 1){
+            if(s == j+1){
+                *found = 1;
+                append(path, g.vertex[j]);
+            }
+            else if(visited[j] == 0){
+                DFSSearchPath(g, j+1, s, path, visited, *found);
+            }
+        }
+    }
+    if(!(*found)){
+        delete(path);
+    }
+}
+
+//求无向图中vi和vj之间的最短路径
+int BFSsearchPath(MGraph g, int vi, int vj, SqQueue *q){
+    for(int i=0; i<g.vexNum, i++){
+        visited[i] = 0;
+    }
+    initQueue(q);
+    EnQueue_bfs(q, vi);
+    visited[vi] = 1;
+    while(!QueueEmpty(q)){
+        DeQueue_bfs(q, &v);
+        for(w = 0; w<g.vexNum; w++){
+            if(g.arcs[v][w] && visited[w]){
+                visited[w] = 1;
+                EnQueue_bfs(q, w);
+                if(w == vj){
+                    break;
+                }
+            }
+        }
+        if(w >= g.vexNum){
+            continue;
+        }
+    }
+}
+typedef struct bfsnode{
+    struct bfsnode *prior;
+    struct bfsnode *next;
+    Elemdata data;
+}bfsnode, *bfslink;
+
+typedef struct {
+    bfslink front;
+    bfslink rear;
+}bfsqueue;
+
+
+void EnQueue_bfs(bfsqueue *q, Elemdata data){
+    p = (bfsqueue)malloc(sizeof(bfsnode));
+    p->data = data;
+    p->next = NULL;
+    p->prior = q->front;
+    q->rear->next = p;
+    q->rear = p;
+}
+
+void Dequeue_bfs(bfsqueue *q, Elemdata *data){
+    *data = q->front;
+    q->front = q->front->next;
 }
 
 #pragma endregion
