@@ -1891,9 +1891,11 @@ void TraverseGraph(Graph g){
 //求图中包含所有顶点的简单路径
 void Hamilton(MGraph g){
     int i;
+    int path[100];
     int visited[100];
     for(i = 0; i<vexNum; i++){          //初始化数组
         visited[i] = 0;
+        path[i] = 0;
     }
     int n = 0;
     for(i = 0; i<g.vexNum; i++){        //将所有结点都进行遍历操作
@@ -2096,4 +2098,14 @@ void kruskal(MGraph g){
     }
 }
 
+int find(afc *s, int n, char c){
+    for(int i=0; i<n; i++){
+        for(int j=0; j<strlen(s[i]); j++){
+            if(s[i][j] == c){
+                return i;
+            }
+        }
+    }
+    return -1;
+}
 #pragma endregion
