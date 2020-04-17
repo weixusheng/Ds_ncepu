@@ -2098,7 +2098,7 @@ void kruskal(MGraph g){
     }
 }
 
-int find(afc *s, int n, char c){
+int find(afc *s, int n, char c){            //从结点字符串中查找,判断两个结点是否在一个连通图中
     for(int i=0; i<n; i++){
         for(int j=0; j<strlen(s[i]); j++){
             if(s[i][j] == c){
@@ -2108,4 +2108,95 @@ int find(afc *s, int n, char c){
     }
     return -1;
 }
+
+//最短路径
+//迪杰斯特拉算法-单源最短路径
+void dijkstra(MGraph g, int v){
+    int dist[MAX];
+    int path[MAX][MAX];
+    int i, j, k, min, n, flag;
+    for(i=0; i<g.vexNum; i++){         //初始化path,都为-1
+        for(j=0; j<g.vexNum; j++){
+            path[i][j] = -1;
+        }
+    }
+    for(i=0; i<g.vexNum; i++){      //对初始化dist,path第一个结点为v(起始结点)
+        dist[i] = g.arcs[v][i];
+        if(dist[i] != 0 && dist[i] != 10000){
+            path[i][0] = v;
+        }
+    }
+    flag = 1;     //判断循环继续的标志
+    while(flag){
+        k = 0;
+        min = 10000;
+        for(j=0; j<g.vexNum; j++){      //获得最小dist的结点
+            if(dist[j] !=0 && dist[j] < min){
+                k = j;
+                min = dist[j];
+            }
+        }
+        for(j = 0; j< g.vexNum; j++){     //以最小dist结点为中间结点更新其他结点的dist和path
+            if(j != k && dist[j] != 0 && dist[j] != 10000){
+                if(dist[j] > dist[k] + g.arcs[k][j]){
+                    dist[j] = dist[k] + g.arcs[k][j];
+                    for(m=0; m<g.arcNum; m++){
+                        path[j][m] = path[k][m];      //j结点路径与j结点路径相同,进行赋值
+                    }
+                    for(m=0; m<g.arcNum && path[j][m]!=-1;){
+                        m++;      //将j结点路径最后一个位置赋值其自身
+                    }
+                    path[j][m] = j;     //找到
+                }
+            }
+        }
+        dist[k] = 0;      //此时dist最小结点完成最短路径搜索,dist=0
+        flag = 0;
+        for(j=0 ;j<g.vexnum; j++){      //判断图中是否还有结点可进行最小路径搜索
+            if(dist[j] != 0 && dist[j]<10000){
+                flag = 1;
+            }
+        }
+    }
+}
+
+//弗洛伊德算法
+typedef PATH[MAX];      //定义路径数组
+void floyd(MGraph){
+    int i, j, m, m, p;
+    int d[MAX][MAX];
+    PATH path[MAX][MAX];
+    for(i=0; i<g.vexNum; i++){      //初始化dist和path
+        for(j=0; j<g.vexNum; j++){
+            d[i][j] = g.arc[i][j];
+            for(k=0; k<g,vexNum; k++){
+                path[i][j][k] = -1;     // i, j 结点之间路径的第k个结点
+            }
+        }
+    }
+    for(i=0; i<g.vexNum; i++){
+        for(j=0; j<g.vexNum; j++){
+            if(d[i][j] != 10000 && d[i][j] != 0){
+                path[i][j][0] = i;
+                path[i][j][1] = j;      //初始化path路径为i, j的直接路径,此时无中间结点
+            }
+        }
+    }
+    for(k=0; k<g.vexNum; k++){      //中间节点遍历,更新path和dist
+        for(i=0; i<g.vexNum; i++){
+            for(j=0; j<g.vexNum; j++){
+                if(d[i][k] + d[k][j] < d[i][j]){
+                    d[i][j] = d[i][k] + d[k][j];
+                    for(m=0; m<g.vexNum && path[i][j][m]!= -1; m++){
+                        path[i][j][m] = path[i][k][m];      //将i,k路径赋值给i,j路径(前半段)
+                    }
+                    for(n=1; n<g.vexNum; m++, n++){
+                        path[i][j][m] = path[k][j][n];      //将k,j路径赋值给i,j路径(后半段,从m位置开始)
+                    }
+                }
+            }
+        }
+    }
+}
+
 #pragma endregion
