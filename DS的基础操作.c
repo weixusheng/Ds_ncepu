@@ -1,3 +1,7 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+
 typedef int ElemType;
 #define MAX 100
 
@@ -31,22 +35,23 @@ typedef struct{
 //线性表初始化操作
 int initSqList(SqList *L, int max){
     L->data = (STD *)malloc(max*sizeof(STD));
-    if(STD->data == NULL){
-        printf("空间申请失败")；return 0;
+    if(L->data == NULL){
+        printf("空间申请失败");
+        return 0;
     }
     L->listSize = max;
     L->length = 0;
     return 1;
 }
 //线性表插入操作
-int insertSqList(SqList *l, int i; STD x){
+int insertSqList(SqList *l, int i,STD x){
     int k;
     if(i<1 || i>l->length+1){
-        printf("插入位置有问题")；
+        printf("插入位置有问题");
         return 0;
     }
     if(l->length >= l->listSize){
-        printf("空间不够")；
+        printf("空间不够");
         return 0;
     }
     for(k=l->length;k>i;k--){
@@ -60,10 +65,10 @@ int insertSqList(SqList *l, int i; STD x){
 int deleteSqList(SqList *l, int i, STD *x){
     int k;
     if(l->length == 0){
-        printf("线性表没有数据")；return 0；
+        printf("线性表没有数据");return 0;
     }
-    if(i<= 0 || i>SqList->length){
-        printf("删除位置有问题")；return 0；
+    if(i<= 0 || l->length){
+        printf("删除位置有问题");return 0;
     };
     *x = l->data[i-1];
     for(k=i; k<l->length; k++){
@@ -75,7 +80,7 @@ int deleteSqList(SqList *l, int i, STD *x){
 //更新操作
 int updateSqList(SqList l, int i, STD x){
     if(l.length == 0){
-        printf("线性表没有数据")；return 0；
+        printf("线性表没有数据");return 0;
     }
     if(i<=0 || i>l.length){
         printf("更新位置有问题");return 0;
@@ -86,10 +91,10 @@ int updateSqList(SqList l, int i, STD x){
 //获取操作
 int getSqList(SqList l, int i, STD *x){
     if(l.length == 0){
-        printf("线性表没有数据")；return 0；
+        printf("线性表没有数据");return 0;
     }
     if(i<=0 || i>l.length){
-        printf("位置有问题")；return 0；
+        printf("位置有问题");return 0;
     }
     *x = l.data[i-1];
     return 1;
@@ -98,11 +103,11 @@ int getSqList(SqList l, int i, STD *x){
 int locationSqList(SqList l, char *x){
     int i;
     if(l.length == 0){
-        printf("没有数据")；return 0；
+        printf("没有数据");return 0;
     }
-    for(i = 0; i<l,length, i++){
-        if(strcmp(l.data[i]).name, x){
-            return i+1
+    for(i = 0; i<l.length; i++){
+        if(strcmp(l.data[i].name, x)){
+            return i+1;
         }
     }
     return 0;
@@ -111,7 +116,7 @@ int locationSqList(SqList l, char *x){
 int dispSqList(SqList l){
     int i;
     if(l.length == 0){
-        printf("没有数据")；return 0；
+        printf("没有数据");return 0;
     }
     for(i=0; i<l.length; i++){
         printf("%10s &7.2f",l.data[i].name,l.data[i].score);
@@ -137,7 +142,7 @@ typedef struct Lnode{
 int initLinkList(LinkList *l){
     *l = (LinkList)malloc(sizeof(LinkList));
     if(*l == 0)return 0;
-    (*l->next) = NULL;
+    (*l)->next = NULL;
     return 1;
 }
 
@@ -149,8 +154,8 @@ int insertLinkList(LinkList l, int i, STD x){
         p = p->next;
         pos++;
     }
-    if(p == null || pos > i-1){
-        printf("插入位置有问题")；return 0；
+    if(p == NULL || pos > i-1){
+        printf("插入位置有问题");return 0;
     }
     s = (LinkList)malloc(sizeof(LNode));
     s->data = x;
@@ -168,7 +173,7 @@ deleteLinkList(LinkList l, int i, STD *x){
         pos++;
     }
     if(p->next == NULL || i-1 < pos){
-        printf("删除位置有问题")；return 0；
+        printf("删除位置有问题");return 0;
     }
     q = p->next;
     p->next = q->next;
@@ -186,7 +191,7 @@ int updateLinkList(LinkList l, int i, STD x){
         pos++;
     }
     if(p->next == NULL || i > pos){
-        printf("更新位置有问题")；return 0；
+        printf("更新位置有问题");return 0;
     }
     p->data = x;
     return 1;
@@ -201,7 +206,7 @@ int getLinkList(LinkList l, int i, STD *x){
         pos++;
     }
     if(p->next == NULL || i < pos){
-        printf("位置有问题")；return 0；
+        printf("位置有问题");return 0;
     }
     *x = p->data;
     return 1;
@@ -237,7 +242,7 @@ int linklistlength(LinkList l){
 }
 
 //遍历操作-单链表
-int disLinkList(linklist l){
+int disLinkList(LinkList l){
     LinkList p = l->next;
     if(p == NULL){
         printf("没有数据");
@@ -258,7 +263,7 @@ void frontcreateLinkList(LinkList *l){
     char yn;
     initLinkList(l);
     do{
-        printf("请输入第%d个学生的姓名和分数，用空格隔开："，++n);
+        printf("请输入第%d个学生的姓名和分数,用空格隔开：",++n);
         scanf("%s%f",&x.name,&x.score);
         getchar();
         p = (LinkList)malloc(sizeof(LNode));
@@ -279,7 +284,7 @@ void rearcreateLinkList(LinkList *l){
     initLinkList(l);
     R = *l;
     do{
-        printf("请输入第%d个学生的信息"，++n);
+        printf("请输入第%d个学生的信息",++n);
         scanf("%s%d",&x.name,&x.score);
         getchar();
         p = (LinkList)malloc(sizeof(LNode));
@@ -314,7 +319,8 @@ int initSLink(StaticLink *l){
     l->SLinkSize = MAXSIZE;
     l->sd[0].next = -1;
     l->AV = 1;
-    for(int i = 1; i < l->SLinkSize-1; i++){
+    int i = 0;
+    for(i = 1; i < l->SLinkSize-1; i++){
         l->sd[i].next = i+1;
     }
     l->sd[i].next = -1;
@@ -340,11 +346,11 @@ int insertSList(StaticLink *l, int i, ElemType x){
             return 1;
         }
         else{
-            printf("没有空余的位置")；return 0；
+            printf("没有空余的位置");return 0;
         }
     }
     else{
-        printf("插入的位置有问题")；return 0；
+        printf("插入的位置有问题");return 0;
     }
 }
 
@@ -353,14 +359,14 @@ int deleteSList(StaticLink *l, int i, ElemType *x){
     int p,t,s,j;
     p = l->SL;
     j = 0;
-    while(l->sd[p]->next != -1 && j < i-1){
-        p = l->sd[p]->next;
+    while(l->sd[p].next != -1 && j < i-1){
+        p = l->sd[p].next;
         j++;
     }
     if(j == i-1){
         t = l->sd[p].next;
         if(t == -1){
-            printf("删除位置不存在")；return 0;
+            printf("删除位置不存在");return 0;
         }
         else{
             l->sd[p].next = l->sd[t].next;
@@ -373,16 +379,16 @@ int deleteSList(StaticLink *l, int i, ElemType *x){
         }
         else{
             while(l->sd[p].next != -1 && l->sd[p].next < t){
-                p = p->sd[p].next;
+                p = l->sd[p].next;
             }
             s = l->sd[p].next;
-            l->sd[t]->next = s;
-            l->sd[p]->next = t;
+            l->sd[t].next = s;
+            l->sd[p].next = t;
             return 1;
         }
     }
     else{
-        printf("删除位置有问题")；return 0;
+        printf("删除位置有问题");return 0;
     }
     return 1;
 }
@@ -390,13 +396,13 @@ int deleteSList(StaticLink *l, int i, ElemType *x){
 
 #pragma region 顺序栈
 //顺序栈
-typedef struct stack{  //第一种使用数组实现
+typedef struct {  //第一种使用数组实现
     ElemType data[MAX];
     int top;
-    int StackSize;
-}SqStack;
+    int stackSize;
+}SqStack_1;
 
-typedef struct stack{  //第二种使用指向数组的指针表示
+typedef struct {  //第二种使用指向数组的指针表示
     ElemType *data;
     int top;
     int StackSize;
@@ -407,7 +413,8 @@ typedef struct stack{  //第二种使用指向数组的指针表示
 int initStack(SqStack *s, int max){
     s->data = (SqStack*)malloc(max*sizeof(ElemType));
     if(s->data == NULL){
-        printf("空间申请失败")；return 0；
+        printf("空间申请失败");
+        return 0;
     }
     s->top = 0;
     s->StackSize = max;
@@ -423,7 +430,7 @@ int SqStackEmpty(SqStack s){
 //得到栈顶
 int SqStackGetTop(SqStack s, ElemType *e){
     if(SqStackEmpty(s)){
-        printf("栈为空")；return 0；
+        printf("栈为空");return 0;
     }
     else{
         *e = s.data[s.top];
@@ -433,7 +440,7 @@ int SqStackGetTop(SqStack s, ElemType *e){
 
 //求栈的长度
 int SqStackLength(SqStack s){
-    return s->top + 1;
+    return s.top + 1;
 }
 
 //进栈-顺序栈
@@ -441,7 +448,7 @@ int SqStackPush(SqStack *s, int e){
     if(s->StackSize == s->top+1){
         return 0;
     }
-    s->tpp++;
+    s->top++;
     s->data[s->top] = e;
     return 1;
 }
@@ -461,6 +468,7 @@ int SqStackPop(SqStack *s, int *e){
 //遍历-顺序栈
 void SqStackTraverse(SqStack s){
     int x;
+    int k=0;
     if(s.top == -1){
         printf("栈空");
         return 0;
@@ -478,7 +486,7 @@ void SqStackTraverse(SqStack s){
 #pragma region 链栈
 //链栈
 typedef struct snode{
-    Elemdata data;
+    ElemType data;
     struct snode *next;
 }Snode, *LinkStack;
 
@@ -499,7 +507,7 @@ int IsEmptyLinkStack(LinkStack s){
 }
 
 //得到栈顶-链栈
-int LinkStackGetTop(LinkStack s, Elemdata *x){
+int LinkStackGetTop(LinkStack s, ElemType *x){
     if(s == NULL) return 0;
     else{
         *x = s->data;
@@ -518,7 +526,7 @@ int LinkStackLength(LinkStack s){
 }
 
 //进栈-链栈
-int LinkStackPush(LinkStack *s, Elemdata x){
+int LinkStackPush(LinkStack *s, ElemType x){
     LinkStack p = (LinkStack)malloc(sizeof(Snode));
     if(!p){
         return 0;
@@ -530,14 +538,14 @@ int LinkStackPush(LinkStack *s, Elemdata x){
 }
 
 //出栈-链栈
-int LinkStackPop(LinkStack *s, Elemdata *x){
+int LinkStackPop(LinkStack *s, ElemType *x){
     LinkStack p = *s;
-    if(*s == null){
+    if(s == NULL){
         return 0;
     }
     else{
-        *x = *s->data;
-        *s = (*s)->next;
+        *x = (*s)->data;
+        s = (*s)->next;
         free(p);
         return 1;
     }
@@ -566,7 +574,7 @@ typedef struct{
 }SqQueue;
 
 //初始化-顺序队列
-int initQueue(SqQueue &q){
+int initQueue(SqQueue *q){
     q->front = q->rear = 0;
     q->queueSize = MAX;
     return 1;
@@ -600,11 +608,11 @@ int GetFront(SqQueue q, ElemType *x){
 }
 
 //进队列-顺序队列
-int EnQueue(SqQueue &q, ElemType x){
+int EnQueue(SqQueue *q, ElemType x){
     if((q->rear + 1) % q->queueSize == q->front) return 0;     //判断循环队列(牺牲一个位置)满
     else{
-        q->data[rear] = x;
-        l->rear = (l->rear+1) % q->queueSize;
+        q->data[q->rear] = x;
+        q->rear = (q->rear+1) % q->queueSize;
         return 1;
     }
 }
@@ -625,28 +633,29 @@ int DeQueue(SqQueue *q, ElemType *x){
 //遍历队列-顺序队列
 int QueueTraverse(SqQueue q){
     ElemType p = q.front;
-    while(p!= (q->rear +1) % q.queueSize){
+    while(p!= (q.rear +1) % q.queueSize){
         
     }
 }
 
 //循环队列
-typedef struct{
-    Elemdata data[MAX];
+typedef struct resycle_queue{
+    ElemType data[MAX];
     int rear;
     int front;
     int length;
     int size;
-}
+};
 //进队列时q.rear = (q.rear+1) % q.size;
 #pragma endregion
 
 #pragma region 链队列
 //结点-链队列
 typedef struct qnode{
-    Elemdata data;
-    struct qnode *next;
-}QNode, *QueueLink;
+    ElemType data;
+    struct qnode* next;
+}QNode,*QueueLink;
+
 //栈队列类型-链队列
 typedef struct{
     QueueLink front;
@@ -655,20 +664,20 @@ typedef struct{
 
 //初始化-链队列
 int initQueueLink(Qlink *q){
-    q->rear = q->front = (Qlink)malloc(sizeof(QNode));
+    q->rear = q->front = (Qlink*)malloc(sizeof(QNode));
     if(q->front == NULL) return 0;
     q->front->next = NULL;
     return 1;
 }
 
 //判断队空-链队列
-int QueueLinkEmpty(Qlink q){
-    if(q->rear == front) return 1;
+int QueueLinkEmpty(Qlink* q){
+    if(q->rear == q->front) return 1;
     else return 0;
 }
 
 //求队列长度-链队列
-int QueueLinkLength(Qlink q){
+int QueueLinkLength(Qlink* q){
     QueueLink p;
     int n = 0;
     if(q->front == q->rear) return 0;
@@ -681,15 +690,15 @@ int QueueLinkLength(Qlink q){
 }
 
 //得到队头-链队列
-int QueueLinkGetHead(Qlink q, Elemdata *x){
-    if(q->front == q.rear) return 0;
+int QueueLinkGetHead(Qlink* q, ElemType *x){
+    if(q->front == q->rear) return 0;
     *x = q->front->next;
     return 1;
 }
 
 //进队列-链队列
-int EnQueueLink(Qlink *q, Elemdata x){
-    Qlink p = (QueueLink)malloc(sizeof(QNode));
+int EnQueueLink(Qlink* q, ElemType x){
+    QNode* p = (QueueLink*)malloc(sizeof(QNode));
     if(p == NULL) return 0;
     p->data = x;
     p->next = NULL;
@@ -699,8 +708,8 @@ int EnQueueLink(Qlink *q, Elemdata x){
 }
 
 //出队列-链队列
-int DeQueueLink(Qlink *q, Elemdata *x){
-    Qlink p;
+int DeQueueLink(Qlink *q, ElemType *x){
+    QNode* p = NULL;
     if(q->rear = q->front) return 0;
     *x = q->front->next->data;
     p = q->front->next;
@@ -713,8 +722,8 @@ int DeQueueLink(Qlink *q, Elemdata *x){
 }
 
 //遍历队列-链队列
-void QueueLinkTraverse(Qlink q){        //不需要返回int,直接void
-    Qlink p = q-front->next;
+void QueueLinkTraverse(Qlink* q){        //不需要返回int,直接void
+    QNode* p = q->front->next;
     while(p){
         printf("%s", p->data);
         p = p->next;
@@ -724,8 +733,8 @@ void QueueLinkTraverse(Qlink q){        //不需要返回int,直接void
 #pragma endregion
 
 #pragma region 多维矩阵
-//问题描述:二维矩阵中的元素aij 为第i行最小值，且为j列的最大值，称该元素为鞍点，求出A(m*n)矩阵中的所有鞍点
-//解题思路：根据二维数组的结构特点，将二维数组看作一维数组处理
+//问题描述:二维矩阵中的元素aij 为第i行最小值,且为j列的最大值,称该元素为鞍点,求出A(m*n)矩阵中的所有鞍点
+//解题思路：根据二维数组的结构特点,将二维数组看作一维数组处理
 void saddle(int A[], int m, int n){
     int i,j,k,min,col;
     for(i = 0; i<m; i++){
@@ -753,7 +762,7 @@ void saddle(int A[], int m, int n){
 int jsmax(int A[], int m, int n, int p){
     int i, j, k, max = *A;
     for(i = 0; i<m; i++){
-        for(j = 0; j<n, j++){
+        for(j = 0; j<n; j++){
             for(k = 0; k<p; k++){  //三维数组转一维数组地址为 i*n*p+j*p+k
                 if(*(A+i*n*p+j*p+k)>max){
                     max = *(A+i*n*p+j*p+k);
@@ -784,7 +793,7 @@ typedef struct TriTNode{
     struct TriTNode *lchild;
     struct TriTNode *rchild;
     struct TriTNode *parent;
-}TriTNode, *TriTree
+}TriTNode, *TriTree;
 
 //先序遍历-递归
 void preorder(BiTree t){
@@ -812,27 +821,29 @@ void postorder(BiTree t){
 }
 
 //树的遍历非递归--王道--前序遍历
-void tree_preorder(BiTree t){
-    BiTNode p = t;
-    initStack(S);
-    while(!SqStackEmpty(S) || p){
+void tree_preorder(BiTree* t){
+    BiTNode* p = t;
+    SqStack*S = NULL;
+    initStack(S,MAX);
+    while(!SqStackEmpty(*S) || p){
         if(p){
             push(S,p);
-            visit(p);   //前进到最左侧节点，先序中途一直访问
+            visit(p);   //前进到最左侧节点,先序中途一直访问
             p = p->lchild;
         }
         else{
-            pop(S,p);   //当左侧无节点时，转向右节点
+            pop(S,p);   //当左侧无节点时,转向右节点
             p = p->rchild;
         }
     }
 }
 
 //王道中序
-void tree_inorder(BiTree t){
-    BiTNode p = t;
-    initStack(S);
-    while(!SqStackEmpty(S) || p){
+void tree_inorder(BiTree* t){
+    BiTNode* p = t;
+    SqStack* S = NULL;
+    initStack(S,MAX);
+    while(!SqStackEmpty(*S) || p){
         if(p){
             push(S,p);
             p = p->lchild;
@@ -840,17 +851,18 @@ void tree_inorder(BiTree t){
         else{
             pop(S,p);
             visit(p);
-            p= = p->rchild;
+            p= p->rchild;
         }
     }
 }
 
 //后序遍历--使用 lastnode 标记上一个访问的节点
-void tree_postorder(BiTree t){
-    BiTNode p = t;
-    BiTNode lastnode = NULL;
-    initStack(S);
-    while(!SqStackEmpty(S) || p){
+void tree_postorder(BiTree* t){
+    BiTNode* p = t;
+    BiTNode* lastnode = NULL;
+    SqStack* S = NULL;
+    initStack(S,MAX);
+    while(!SqStackEmpty(*S) || p){
         while(p){
             push(S,p);
             p = p->lchild;
@@ -871,26 +883,27 @@ void tree_postorder(BiTree t){
 }
 
 //华北电力--任务分析法
-//分析方法:改装stack结构，使其具有task属性,根据每个节点的task来区分对于节点的操作
+//分析方法:改装stack结构,使其具有task属性,根据每个节点的task来区分对于节点的操作
 typedef struct{
     BiTree ptr;
-    int task;   //task = 1表示遍历，task = 0表示访问
-}Elemdata;
+    int task;   //task = 1表示遍历,task = 0表示访问
+}Elem_data;
 
 typedef struct{
-    Elemdata data[MAX];
+    Elem_data data[MAX];
     int top;
-}SqStack;
+}Sq_Stack;
 
 //非递归中序遍历
-void task_inorder(BiTree t){
-    initStack(S);
-    Elemdata e;
+void task_inorder(BiTree* t){
+    SqStack* S = NULL;
+    initStack(S,MAX);
+    Elem_data e;
     e.ptr = t;
     e.task = 1;
     BiTree p;
     if(t) push(S,e);
-    while(!SqStackEmpty(S)){
+    while(!SqStackEmpty(*S)){
         pop(S,e);
         if(e.task == 0){
             visit(e.ptr);
@@ -914,13 +927,14 @@ void task_inorder(BiTree t){
 }
 //非递归前序遍历
 void task_preorder(BiTree t){
-    initStack(S);
-    Elemdata e;
+    SqStack* S = NULL;
+    initStack(S,MAX);
+    Elem_data e;
     e.task = 1;
     e.ptr = t;
     BiTree p;
     if(t) push(S,e);
-    while(!SqStackEmpty(S)){
+    while(!SqStackEmpty(*S)){
         pop(S,e);
         if(e.task == 0){
             visit(e.ptr);
@@ -939,13 +953,14 @@ void task_preorder(BiTree t){
 }
 //非递归后序遍历
 void task_postorder(BiTree t){
-    initStack(S);
-    Elemdata e;
+    SqStack* S = NULL; 
+    initStack(S,MAX);
+    Elem_data e;
     e.ptr = t;
     e.task = 1;
     BiTree p;
     if(t) push(S,e);
-    while(!SqStackEmpty(S)){
+    while(!SqStackEmpty(*S)){
         pop(S,e);
         if(e.task == 0){
             visit(e.ptr);
@@ -983,22 +998,23 @@ BiTree Goleft(BiTree t, SqStack *s, char c[]){  //左子树一直进栈
     return t;                   //返回最左侧结点
 }
 void NR_postorder(BiTree t){
-    initStack(S);
+    SqStack* S = NULL;
+    initStack(S,MAX);
     char lrtag[MAX];            //创建标记数组
     BiTree p;
     t = Goleft(t,S,lrtag);      //左子树进栈,p为最左侧结点
     while(t){
-        lrtag[S.top] = 'R';     //第二次访问,改变为"R",紧接着访问"rchild"
+        lrtag[S->top] = 'R';     //第二次访问,改变为"R",紧接着访问"rchild"
         if(t->rchild){
             t = Goleft(t->rchild,S,lrtag);
         }
         else{
-            while(!SqStackEmpty(S) && lrtag[S.top] == 'R'){
+            while(!SqStackEmpty(*S) && lrtag[S->top] == 'R'){
                 pop(S,p);
                 visit(p);
             }
         }
-        if(!SqStackEmpty(S)) SqStackGetTop(S,t);
+        if(!SqStackEmpty(*S)) SqStackGetTop(*S,t);
         else{
             t = NULL;
         }
@@ -1008,16 +1024,17 @@ void NR_postorder(BiTree t){
 void NR_preorder(BiTree t){
     BiTree p;
     char lrtag[MAX];
-    initStack(S);
+    SqStack* S = NULL;
+    initStack(S,MAX);
     if(t == NULL) return;       //空树返回
     p = t;
-    while(p!= NULL || !SqStackEmpty(S)){
+    while(p!= NULL || !SqStackEmpty(*S)){
         while(p!= NULL){        //进栈访问到最左侧结点
             visit(p);
             push(S,p);
             p = p->lchild;
         }
-        if(SqStackEmpty(S)) return;
+        if(SqStackEmpty(*S)) return;
         else{                   //当前不为空栈,出栈当前元素,转向右子树
             pop(S,p);
             p = p->rchild;
