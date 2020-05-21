@@ -1044,14 +1044,15 @@ void NR_preorder(BiTree t){
 }
 
 //层序遍历
-void layer_traversal(BiTree t){
+void layer_traversal(BiTree* t){
     BiTree p;
+    SqQueue *q = NULL;
     initQueue(q);
-    if(b){
-        EnQueue(q, b);
+    if(t){
+        EnQueue(q, t);
     }
-    while(!QueueEmpty(q)){
-        p = DeQueue(q);
+    while(!QueueEmpty(*q)){
+        DeQueue(q,p);
         visit(p);
         if(p->lchild){
             EnQueue(q, p->lchild);
@@ -1064,6 +1065,7 @@ void layer_traversal(BiTree t){
 
 //字符串根左子树右子树创造一棵树
 void rlr_CreateTree(BiTree *t){
+    int ch;
     scanf("%c", &ch);
     if(ch == '#') *t = NULL;        //"#"表示空结点
     else{
@@ -1076,11 +1078,15 @@ void rlr_CreateTree(BiTree *t){
 
 //读入边创造二叉链表非递归方法
 void CreateTree(BiTree *t){
+    SqQueue* q = NULL;
+    BiTree p = NULL;
+    BiTree s = NULL;
+    int fa, ch, lrtag;
     initQueue(q);
     *t = NULL;
-    scanf(fa, ch, lrflag);
+    scanf(fa, ch, lrtag);
     while(ch!= '#'){
-        p = (BiTree)malloc(sizeof(BiTNode));
+        p = (BiTree*)malloc(sizeof(BiTNode));
         p->data = ch;
         p->lchild = p->rchild = NULL;       //首先创建结点
         EnQueue(q,p);       //结点进队列,为写一个结点寻找父节点做准备
@@ -1088,10 +1094,10 @@ void CreateTree(BiTree *t){
             *t = p;
         }
         else{
-            s = QueueLinkGetHead(q);        //寻找父节点
+            QueueLinkGetHead(q,s);        //寻找父节点
             while(s->data != s){
-                DeQueue(q);
-                s = QueueLinkGetHead(q);
+                DeQueue(q,NULL);
+                QueueLinkGetHead(q,s);
             }
             if(lrtag == 0) s->lchild = p;       //链接父节点
             else s->rchild = p;
@@ -1102,6 +1108,7 @@ void CreateTree(BiTree *t){
 
 //先序和中序确定一个二叉树
 void CrtBT(BiTree *t, char pre[], char ino[], int ps, int is, int n){
+    int k = 0;
     if(n == 0){     //pre[]为先序遍历, ino[]为中序遍历, ps为先序遍历第一个元素, is为中序遍历第一个元素
         *t == NULL;
     }
@@ -1125,6 +1132,7 @@ void CrtBT(BiTree *t, char pre[], char ino[], int ps, int is, int n){
 
 //二叉树遍历算法的应用-求二叉树的深度
 int depth(BiTree t){
+    int depl,depr;
     if(t == NULL){
         return 0;
     }
@@ -1149,9 +1157,9 @@ int leafcount(BiTree t, int *count){
 }
 
 //求任意结点的祖先
-void search_priorder(BiTree t, Elemdata x){     //基于路径分析法实现-后序遍历
+void search_priorder(BiTree t, ElemType x){     //基于路径分析法实现-后序遍历
     SqStack s;
-    initStack(&s);
+    initStack(&s,MAX);
     char lrtag[MAX] = "";
     BiTree t;
     t = priGoleft(t, &s, lrtag);
@@ -1196,7 +1204,7 @@ BiTree priGoleft(BiTree t, SqStack *s, char c[]){
 typedef struct BiThrNode{
     int ltag;
     struct BiThrNode *lchild;
-    Elemdata data;
+    ElemType data;
     int rtag;
     struct BiThrNode *rchild;
 }BiThrNodeType, *BiThrTree;
@@ -1227,7 +1235,7 @@ void InThreading(BiThrTree p, BiThrTree *pre){
 //创建一个带头结点的中序线索二叉树
 //头结点左指针指向t,右指针指向最后一个结点,二叉树的第一个结点和最后一个结点指向头结点
 int orderThr(BiThrTree *head, BiThrTree t){
-    if(!(*head = (BiThrTree)malloc(sizeof(BiThrNode)))) return 0;   //申请结点失败
+    if(!(*head = (BiThrTree*)malloc(sizeof(struct BiThrNode)))) return 0;   //申请结点失败
     (*head)->ltag = 0;          //左指针暂时为空
     (*head)->rtag = 1;
     (*head)->rchild = *head;            //右指针指向自己(暂时初始化)
@@ -1238,7 +1246,7 @@ int orderThr(BiThrTree *head, BiThrTree t){
     else{
         (*head)->lchild = t;            //左指针指向t
         pre = *head;            //将头结点变为pre,从而第一个结点与pre链接线索
-        InThreading(BiThrTree t, pre);          //中序线索化t
+        InThreading(t, pre);          //中序线索化t
         pre->rchild = *head;            //最后链接,
         pre->rtag = 1;
         (*head)->rchild = pre;
@@ -1270,13 +1278,13 @@ BiThrTree InPostNode(BiThrTree p){
 
 //中序线索二叉树寻找结点p的后序前驱结点
 //思想与中序寻找先序后继结点很像,画图即可
-BiThrNode IPostPreNode(BiThrTree p){
-    BiThrNode pre;
+struct BiThrNode* IPostPreNode(BiThrTree head, BiThrTree p){
+    struct BiThrNode* pre;
     if(p->rtag == 0) pre = pre->rchild;
     else{
         pre = p;
         while(pre->ltag == 1 && pre->lchild != head) pre = pre->lchild;
-        pre = pre->lchild
+        pre = pre->lchild;
     }
     return pre;
 }
@@ -1290,9 +1298,9 @@ p为叶子节点:
     1.如果p->rchild = *head,则p->rchild为后继结点,因为先序遍历和中序遍历最后一个结点相同,后继也相同
     2.如果p->rchild != *head,若p->rchild有右子树,直接p = p->rchild->rchild,若p->rchild有右线索,进入循环
 */
-BiThrNode IPrePostNode(BiThrTree p){
-    BiThrNode post;
-    if(p->ltag == 0;) post = p->lchild;
+BiThrTree IPrePostNode(BiThrTree head, BiThrTree p){
+    BiThrTree post;
+    if(p->ltag == 0) post = p->lchild;
     else{
         post = p;
         while(post->rtag == 1 && post->rchild != head) post = post->rchild;
@@ -1303,8 +1311,8 @@ BiThrNode IPrePostNode(BiThrTree p){
 
 //在中序线索上查找值为x的结点
 //直接到达第一个结点,或最后一个结点,然后前驱或后继一次访问所有结点
-BiThrNode Search(BiThrTree head, Elemdata x){
-    BiThrNode p = head->lchild;
+BiThrTree Search(BiThrTree head, ElemType x){
+    BiThrTree p = head->lchild;
     while(p->rtag != 1 && p != head){
         p = p->lchild;
     }
@@ -1325,7 +1333,7 @@ void InsertThrRight(BiThrTree t, BiThrTree p){
     BiThrTree w;
     p->rchild = t->rchild;
     p->rtag = t->rtag;
-    p->lchild = s;
+    p->lchild = t;
     p->ltag = 1;
     t->rchild = p;
     t->rtag = 0;
@@ -1340,7 +1348,7 @@ void InsertThrRight(BiThrTree t, BiThrTree p){
 #pragma region 树和森林
 //双亲表示法
 typedef struct tnode{
-    Elemdata data;
+    ElemType data;
     int parent;         //父节点的位置
 }PNode;
 
@@ -1357,7 +1365,7 @@ typedef struct CTNode{          //孩子链表上的结点类型
 }CTNode, *ChildPtr;
 
 typedef struct{         //头结点的类型
-    Elemdata data;
+    ElemType data;
     ChildPtr link;          //孩子链表的头指针
 }CTbox;
 
@@ -1376,7 +1384,7 @@ void createPTree(ChildList *t){
     getchar();
     printf("请依次输入%d个结点的值",t->n);
     for(i = 0; i<t->n; i++){            //初始化结点序列 nodes
-        scanf(&t->nodes[i]->data);
+        scanf(&t->nodes[i].data);
         t->nodes[i].link = NULL;
     }
     getchar();
@@ -1394,7 +1402,7 @@ void createPTree(ChildList *t){
         }
         if(k > t->n) return;
         p = t->nodes[j].link;           //建立链接
-        if(p == null){              //当前头结点还没有孩子结点,申请结点,链接
+        if(p == NULL){              //当前头结点还没有孩子结点,申请结点,链接
             s = (ChildPtr)malloc(sizeof(CTNode));
             s->child = k;
             s->next = NULL;
@@ -1413,12 +1421,16 @@ void createPTree(ChildList *t){
 
 //孩子兄弟链表表示法
 typedef struct CSNode{
-    Elemdata data;
+    ElemType data;
     struct CSNode *fch, *nsib;
 }CSNode, *CStree;
 
 //创建孩子兄弟树
 void createCSTree(CStree *t){
+    int fa,ch;
+    SqQueue* q = NULL;
+    CStree p = NULL;
+    CStree s = NULL;
     initQueue(q);
     CStree r;
     *t = NULL;
@@ -1427,13 +1439,13 @@ void createCSTree(CStree *t){
         p = (CStree)malloc(sizeof(CSNode));         //初始化结点
         p->data = ch;
         p->fch = p->nsib = NULL;
-        EnQueue(Q, p);
+        EnQueue(q, p);
         if(fa == '#') *t = p;           //此时为根节点
         else{
-            s = QueueLinkGetHead(Q);
+            QueueLinkGetHead(q,s);
             while(s->data != fa){           //找到父节点位置
-                DeQueue(Q);
-                s = QueueLinkGetHead(Q);
+                DeQueue(q,NULL);
+                QueueLinkGetHead(q,s);
                 if(s->fch == NULL){         //如果没有孩子结点,直接链接为第一个孩子
                     s->fch = p;
                     r = p;          //r存储当前孩子结点位置
@@ -1546,7 +1558,7 @@ void delete(CStree p, CStree f){            //删除单个结点,重新连接后
     }
     if(f->nsib == p){
         f->nsib = f->nsib;
-        p->nisb = NULL;
+        p->nsib = NULL;
         postdelete(p);
     }
 }
@@ -1555,35 +1567,36 @@ void postdelete(CStree t){          //递归删除整个树
     if(t){
         postdelete(t->fch);
         postdelete(t->nsib);
-        free(p);
+        free(t);
     }
 }
 
 
 //树的深度
 int depthTree(BiThrTree t){
+    int d1,d2;
     if(t == NULL){
         return 0;
     }
     else{
-        d1 = depthTree(t->fch);           //递归求深度
-        d2 = depthTree(t->nsib);
+        d1 = depthTree(t->lchild);           //递归求深度
+        d2 = depthTree(t->rchild);
         return d1+1 > d2 ? d1+1:d2; 
     }
 }
 
 //求二叉树中的所有叶子节点的路径
-void AllBitreePath(BiTree t, stack *s){
+void AllBitreePath(BiTree t, SqStack *s){
     while(t){
         SqStackPush(s, t->data);
         if(!t-> lchild && !t->rchild){          //叶子节点此时输出栈
             SqStackTraverse(*s);
         }
         else{
-            AllBitreePath(t->lchild, *s);       //非叶子结点进栈
-            AllBitreePath(t->rchild, *s);
+            AllBitreePath(t->lchild, s);       //非叶子结点进栈
+            AllBitreePath(t->rchild, s);
         }
-        SqStackPop(s);          //此时已经输出栈,出栈当前叶子结点
+        SqStackPop(s,NULL);          //此时已经输出栈,出栈当前叶子结点
     }
 }
 
@@ -1592,12 +1605,12 @@ void AllTreePath(CStree t, SqStack *s){
     while(t){
         SqStackPush(s, t->data);
         if(!t->fch){            //没有子结点,输出栈
-            SqStackTraverse(s);
+            SqStackTraverse(*s);
         }
         else{           //一直递归直到遇到叶子结点输出栈
-            AllTreePath(t->fch, *s);
+            AllTreePath(t->fch, s);
         }
-        SqStackPop(s);          //叶子结点出栈
+        SqStackPop(s,NULL);          //叶子结点出栈
         t = t->nsib;            //上一层开始寻找兄弟结点
     }
 }
@@ -1611,14 +1624,14 @@ typedef struct{
     int weight;
     int parent, lch, rch;
 }NodeType;
-typedef NodeType HufTree[M+1];
+typedef NodeType HufTree[MAX+1];
 typedef char **HufCode;
 
 //已知n个字符,生成一棵哈夫曼树
 void huff_tree(int w[], int n, HufTree ht){
     int i, s1, s2;
-    fot(i = 1; i<2*n; i++){         //首先初始化,一共2n-1个结点
-        if(i>=1; && i<=n){
+    for(i = 1; i<2*n; i++){         //首先初始化,一共2n-1个结点
+        if(i>=1 && i<=n){
             ht[i].weight = w[i-1];          //将所给字符,赋值到初始结点中
         }
         else{
@@ -1626,9 +1639,9 @@ void huff_tree(int w[], int n, HufTree ht){
         }
         ht[i].parent = 0;           //初始化结点
         ht[i].lch = 0;
-        ht[i],rch = 0;
+        ht[i].rch = 0;
     }
-    for(i = n+1; i<2*n, i++){
+    for(i = n+1; i<2*n; i++){
         select(ht, n, &s1, &s2);            //从结点中挑选两个最小权值结点
         ht[i].weight = ht[s1].weight + ht[s2].weight;           //结点合并
         ht[i].lch = s1;         //合并结点建立父子链接
@@ -1647,9 +1660,9 @@ void select(HufTree ht, int n, int *s1, int *s2){           //从结点中挑选
         }
     }
     for(min = 100, i = 1; i<2*n; i++){          //最小结点2
-        if(ht[i],parent == 0 && ht[i].weight != 0 && i != s1 && ht[i].weight <=min){
+        if(ht[i].parent == 0 && ht[i].weight != 0 && i != s1 && ht[i].weight <=min){
             min = ht[i].weight;
-            *s2 = i
+            *s2 = i;
         }
     }
 }
@@ -1658,7 +1671,7 @@ void select(HufTree ht, int n, int *s1, int *s2){           //从结点中挑选
 void hufcode(HufCode *hcd, HufTree ht, int n){
     char *cd;
     int i, start, c, f;
-    *hcd = (HufCode)malloc((n+1)*sizeof(*char));
+    *hcd = (HufCode)malloc((n+1)*sizeof(char));
     cd = (char *)malloc(n*sizeof(char));            //申请存放编码的数组
     for(i = 1; i<=n; i++){
         cd[n-1] = '\0';
@@ -1687,15 +1700,15 @@ void hufcode(HufCode *hcd, HufTree ht, int n){
 //图的邻接矩阵
 #define VNUM 20
 typedef struct{
-    VertexType vexs[VNUM];          //存储顶点信息
-    int arcs[VNUM][VUM];            //存储顶点关系
+    ElemType* vexs[VNUM];          //存储顶点信息
+    int arcs[VNUM][VNUM];            //存储顶点关系
     int vexNum, arcNum;         //存储顶点数,弧数
 }MGraph;
 
 //网的邻接矩阵
 typedef struct{
-    VertexType vexs[VNUM];
-    WeightType arcs[VNUM][VNUM];            //顶点的关系,边的权重
+    ElemType* vexs[VNUM];
+    ElemType* arcs[VNUM][VNUM];            //顶点的关系,边的权重
     int vexNum, arcNum;         //顶点数,弧数
 }NetGraph;
 
@@ -1722,11 +1735,11 @@ void crtMGraph(MGraph *G){
 typedef struct ArcNode{
     int adjvex;
     struct adjvex *nextArc;
-    [WeightType info;]          //视情况而定
+    //[WeightType info;]          //视情况而定
 }ArcNode;
 //图的邻接表-表头结点的定义
 typedef struct VertexNode{
-    Elemdata vertex;
+    ElemType vertex;
     ArcNode *firstArc;
 }VertexNode;
 //图的邻接表-总体类型
@@ -1743,9 +1756,9 @@ void BuildAdjlist(ALGraph *g){
         scanf(g->adjlist[i].vertex);
         g->adjlist[i].firstArc = NULL;
     }
-    for(k = 0; k<g->arcNum; k++){
+    for(j = 0; j<g->arcNum; j++){
         scanf(&i, &j);
-        p = (ArcNode*)malloc(sizeof(ArcNode));
+        ArcNode* p = (ArcNode*)malloc(sizeof(ArcNode));
         p->adjvex = j-1;
         p->nextArc = g->adjlist[i-1].firstArc;
         g->adjlist[i-1].firstArc = p;
@@ -1756,11 +1769,11 @@ void BuildAdjlist(ALGraph *g){
 typedef struct Arcbox{
     int tailvex, headvex;           //边的前驱后继
     struct ArcBox *hlink, *tlink;
-    infoType *info;
+    ElemType *info;
 }Arcbox;
 //十字链表表头结点
 typedef struct VexNode{
-    VertexType data;
+    ElemType data;
     Arcbox *firstin, *firstout;         //第一条入弧和出弧
 }VexNode;
 //十字链表类型
@@ -1774,11 +1787,11 @@ typedef struct Ebox{
     int mark;
     int ivex, jvex;
     struct Ebox *ilink, *jlink;
-    infoType *info;
+    ElemType *info;
 }Ebox;
 //无向图邻接多重表-顶点结点
 typedef struct VexBox{
-    VertexType data;
+    ElemType data;
     Ebox *firstedge;
 }VexBox;
 //无向图邻接多重表类型
@@ -1788,7 +1801,8 @@ typedef struct{
 }AMLGraph;
 
 //连通图的深度优先遍历-递归
-void DFSRecursion(Graph g, int v, int visited[]){
+void DFSRecursion(MGraph g, int v, int visited[]){
+    int w = 0;
     printf(v);
     visited[v] = 1;
     w = FirstAdjVex(g, v);
@@ -1801,38 +1815,39 @@ void DFSRecursion(Graph g, int v, int visited[]){
 }
 
 //连通图的深度优先遍历-非递归
-void DFS(Graph G, int v){
+void DFS(MGraph G, int v){
     SqStack s;
-    initStack(&s);
+    initStack(&s,MAX);
     int visited[100];
-    int i;
+    int i,k,w;
     for(i = 0; i<G.vexNum; i++){
         visited[i] = 0;
     }
     printf(v);
     visited[v] = 1;
-    SqStackPush(s, v);
+    SqStackPush(&s, v);
     while(!SqStackEmpty(s)){
-        k = SqStackGetTop(s);
+        SqStackGetTop(s,k);
         w = FirstAdjVex(G, k);
         while(w){
             if(visited[w] == 0){            //没有访问过
                 printf(w);
                 visited[w] = 1;
-                SqStackPush(s, w);
+                SqStackPush(&s, w);
                 break;
             }
             w = NextAdjVex(G, k, w);            //访问过,查找next
         }
         if(!w){         //当前结点访问完成,回溯上一个节点
-            SqStackPop(s);
+            SqStackPop(&s,NULL);
         }
     }
 }
 
 //邻接矩阵连通图-深度优先遍历递归
-void DFSR_MGraph(MGraph g, int v, visited[]){
-    printf(g.vertex[v]);
+void DFSR_MGraph(MGraph g, int v, int visited[]){
+    int j;
+    printf(g.vexs[v]);
     visited[v] = 1;
     for(j = 0; j<g.vexNum; j++){
         if(g.arcs[v][j] == 1 && visited[j] == 0){
@@ -1843,44 +1858,50 @@ void DFSR_MGraph(MGraph g, int v, visited[]){
 
 //邻接表连通图-深度优先非递归遍历-使用栈
 void DFS_ALGraph(ALGraph g, int v){
-    int i;
+    int i,k;
+    ArcNode* p;
     SqStack s;
-    initStack(s);
+    initStack(&s,MAX);
     int visited[100];
     for(i = 0; i<g.vexNum; i++){            //初始化visited数组
         visited[i] = 0;
     }
-    printf(G.adjlist[v].vertex);            //访问第一个节点
+    printf(g.adjlist[v].vertex);            //访问第一个节点
     visited[v] = 1;
-    SqStackPush(s, v);
+    SqStackPush(&s, v);
     while(!SqStackEmpty(s)){
-        k = SqStackGetTop(s);
+        SqStackGetTop(s,k);
         p = g.adjlist[k].firstArc;          //获得栈顶结点的第一条边
         while(p){
             if(p && visited[p->adjvex] == 0){
                 printf(g.adjlist[p->adjvex].vertex);
                 visited[p->adjvex] = 1;
-                SqStackPush(s, p->adjvex);
+                SqStackPush(&s, p->adjvex);
                 break;
             }
             p = p->nextArc;            //下一条边
         }
         if(!p){
-            SqStackPop(s);          //没有相连结点可以访问,出栈此时结点
+            SqStackPop(&s,MAX);          //没有相连结点可以访问,出栈此时结点
         }
     }
 }
 
 //邻接表连通图的广度优先遍历-使用队列
 void BFSRecursion(ALGraph g, int v){
+    SqQueue* q;
+    ArcNode* p;
+    int w;
     initQueue(q);
     printf(g.adjlist[v].vertex);
+    int visited[] = {0};
     visited[v] = 1;
     EnQueue(q, v);
-    while(!QueueEmpty){         //对队列元素执行广度优先
-        v = DeQueue(q);
+    while(!QueueEmpty(*q)){         //对队列元素执行广度优先
+        v = DeQueue(q,NULL);
         p = g.adjlist[v].firstArc;          //得到队头的第一条边
         while(p){
+            w = p->adjvex;
             if(visited[w] == 0){            //此时尚未访问,访问该节点
                 printf(g.adjlist[p->adjvex].vertex);
                 visited[w] == 1;
@@ -1892,7 +1913,8 @@ void BFSRecursion(ALGraph g, int v){
 }
 
 //非连通图的深度遍历
-void TraverseGraph(Graph g){
+void TraverseGraph(MGraph g){
+    int v;
     int visited[100];
     for(v = 0; v<g.vexNum; v++){            //初始化visited数组
         visited[v] = 0;
@@ -1910,28 +1932,29 @@ void Hamilton(MGraph g){
     int i;
     int path[100];
     int visited[100];
-    for(i = 0; i<vexNum; i++){          //初始化数组
+    for(i = 0; i<g.vexNum; i++){          //初始化数组
         visited[i] = 0;
         path[i] = 0;
     }
     int n = 0;
     for(i = 0; i<g.vexNum; i++){        //将所有结点都进行遍历操作
         if(!visited[i]){
-            DFS_h(g, i, path, &n);
+            DFS_h(g, i, path, visited,n);
         }
     }
 }
 
 void DFS_h(MGraph g, int i, int path[], int visited[], int *n){
+    int j = 0;
     visited[i] = 1;
     path[*n] = i;
     (*n)++;
     if((*n) == g.vexNum){           //满足条件输出路径
         printf(path);
     }
-    fot(j = 0; j<g.vexNum; j++){
+    for(j = 0; j<g.vexNum; j++){
         if(g.arcs[i][j] && visited[j]){         //递归执行dfs
-            DFS_h(g, j, path, n);
+            DFS_h(g, j, path,visited, n);
         }
     }
     visited[i] = 0;         //此时所有子结点都访问完成,向上一级继续访问
@@ -1940,8 +1963,9 @@ void DFS_h(MGraph g, int i, int path[], int visited[], int *n){
 
 //判断图中是否存在环-基于深度优先
 void DFSloop(MGraph g, int i, int visited[]){
+    int di,vi,j;
     visited[i] = 1;         //当前结点访问
-    for(int di=0, vi=0, j=0; j<g.vexNum; j++){          //判断边是否都被访问
+    for(di=0, vi=0, j=0; j<g.vexNum; j++){          //判断边是否都被访问
         if(g.arcs[i][j]){
             di++;
             if(visited[j]){
@@ -1963,12 +1987,12 @@ void DFSloop(MGraph g, int i, int visited[]){
 //求无向图的顶点a到i之间的简单路径
 void DFSSearchPath(MGraph g, int v, int s, char path[], int visited[], int *found){
     visited[v-1] = 1;           //访问该结点
-    append(path, g.vertex[v-1]);            //结点进数组path
-    for(j = 0; j<g.vexNum && !(*found); j++){
+    append(path, g.vexs[v-1]);            //结点进数组path
+    for(int j = 0; j<g.vexNum && !(*found); j++){
         if(g.arcs[v-1][j] == 1){            //边存在
             if(s == j+1){           //当前结点为为目标节点,则找到路径
                 *found = 1;
-                append(path, g.vertex[j]);
+                append(path, g.vexs[j]);
             }
             else if(visited[j] == 0){           //dfs递归遍历
                 DFSSearchPath(g, j+1, s, path, visited, *found);
@@ -1976,19 +2000,21 @@ void DFSSearchPath(MGraph g, int v, int s, char path[], int visited[], int *foun
         }
     }
     if(!(*found)){          //递归子结点都访问完,删除当前结点
-        delete(path);
+        delete_list(path);  //删除当前路径的一个字符串
     }
 }
 
 //求无向图中vi和vj之间的最短路径
 int BFSsearchPath(MGraph g, int vi, int vj, SqQueue *q){
-    for(int i=0; i<g.vexNum, i++){          //初始化 visted[]
+    int v,w;
+    int visited[] = {};
+    for(int i=0; i<g.vexNum; i++){          //初始化 visted[]
         visited[i] = 0;
     }
     initQueue(q);
     EnQueue_bfs(q, vi);         //第一个节点访问
     visited[vi] = 1; 
-    while(!QueueEmpty(q)){          //广度优先遍历
+    while(!QueueEmpty(*q)){          //广度优先遍历
         DeQueue_bfs(q, &v);
         for(w = 0; w<g.vexNum; w++){
             if(g.arcs[v][w] && visited[w]){
@@ -2007,7 +2033,7 @@ int BFSsearchPath(MGraph g, int vi, int vj, SqQueue *q){
 typedef struct bfsnode{
     struct bfsnode *prior;
     struct bfsnode *next;
-    Elemdata data;
+    ElemType data;
 }bfsnode, *bfslink;
 
 typedef struct {
@@ -2016,8 +2042,8 @@ typedef struct {
 }bfsqueue;
 
 
-void EnQueue_bfs(bfsqueue *q, Elemdata data){           //prior指向队头front
-    p = (bfsqueue)malloc(sizeof(bfsnode));
+void EnQueue_bfs(bfsqueue *q, ElemType data){           //prior指向队头front
+    bfsnode* p = (bfsnode*)malloc(sizeof(bfsnode));
     p->data = data;
     p->next = NULL;
     p->prior = q->front;
@@ -2025,7 +2051,7 @@ void EnQueue_bfs(bfsqueue *q, Elemdata data){           //prior指向队头front
     q->rear = p;
 }
 
-void Dequeue_bfs(bfsqueue *q, Elemdata *data){
+void Dequeue_bfs(bfsqueue *q, ElemType *data){
     *data = q->front;
     q->front = q->front->next;
 }
@@ -2054,9 +2080,9 @@ void prim(MGraph g){
             }
         }
         lowcost[k].weight = 0;          //权值最小结点进生成树,weight=0
-        for(j=0; j<g.vexNum; g++){          //更新其余未进入生成树结点的权值
-            if(g.ars[k][j] < lowcost[j].weight){
-                lowcost[j] = g.ars[k][j];
+        for(j=0; j<g.vexNum; j++){          //更新其余未进入生成树结点的权值
+            if(g.arcs[k][j] < lowcost[j].weight){
+                lowcost[j].vi = g.arcs[k][j];
                 lowcost[j].vi = k;
             }
         }
@@ -2066,19 +2092,19 @@ void prim(MGraph g){
 //最小生成树-kruskal
 typedef char afc[MAX];
 void kruskal(MGraph g){
-    int i, j, k, t., p, q, x[MAX][4];
-    zfc c[MAX];
+    int i, j, k, t, p, q, x[MAX][4];
+    afc c[MAX];
     for(i=0; i<g.vexNum; i++){
         c[i][0] = i+48;         //初始化,下标转字符串
         c[i][1] = 0;            //字符串结束标志
     }
-    for(i=0; i<g,vexNum; i++){          //初始化所有边,放进 x[max][4] 数组
+    for(i=0; i<g.vexNum; i++){          //初始化所有边,放进 x[max][4] 数组
         for(j=i; j<g.vexNum; j++){
             if(g.arcs[i][j] != 0 && g.arcs[i][j] != maxcost){
                 x[k][0] = i;
                 x[k][1] = j;
                 x[k][2] = g.arcs[i][j];
-                x[k][3] = 0
+                x[k][3] = 0;
                 k++;
             }
         }
@@ -2110,7 +2136,7 @@ void kruskal(MGraph g){
     printf("%7c%7c%6s", "顶点", "顶点", "权值");
     for(i=0; i<g.arcNum; i++){          //输出边
         if(x[i][3] == 1){
-            printf("%7c%7c%6d", g.vertex[x[i][0]], g.vertex[x[i][1]], x[i][2])
+            printf("%7c%7c%6d", g.vexs[x[i][0]], g.vexs[x[i][1]], x[i][2]);
         }
     }
 }
@@ -2131,7 +2157,7 @@ int find(afc *s, int n, char c){            //从结点字符串中查找,判断
 void dijkstra(MGraph g, int v){
     int dist[MAX];
     int path[MAX][MAX];
-    int i, j, k, min, n, flag;
+    int i, j, k, min, n, flag, m;
     for(i=0; i<g.vexNum; i++){         //初始化path,都为-1
         for(j=0; j<g.vexNum; j++){
             path[i][j] = -1;
@@ -2169,7 +2195,7 @@ void dijkstra(MGraph g, int v){
         }
         dist[k] = 0;      //此时dist最小结点完成最短路径搜索,dist=0
         flag = 0;
-        for(j=0 ;j<g.vexnum; j++){      //判断图中是否还有结点可进行最小路径搜索
+        for(j=0 ;j<g.vexNum; j++){      //判断图中是否还有结点可进行最小路径搜索
             if(dist[j] != 0 && dist[j]<10000){
                 flag = 1;
             }
@@ -2178,15 +2204,15 @@ void dijkstra(MGraph g, int v){
 }
 
 //弗洛伊德算法
-typedef PATH[MAX];      //定义路径数组
-void floyd(MGraph){
-    int i, j, m, m, p;
+typedef int PATH[MAX];      //定义路径数组
+void floyd(MGraph g){
+    int i, j, m, n, p,k;
     int d[MAX][MAX];
     PATH path[MAX][MAX];
     for(i=0; i<g.vexNum; i++){      //初始化dist和path
         for(j=0; j<g.vexNum; j++){
-            d[i][j] = g.arc[i][j];
-            for(k=0; k<g,vexNum; k++){
+            d[i][j] = g.arcs[i][j];
+            for(k=0; k<g.vexNum; k++){
                 path[i][j][k] = -1;     // i, j 结点之间路径的第k个结点
             }
         }
