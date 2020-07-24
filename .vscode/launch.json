@@ -1,3 +1,5 @@
+/* Linux */
+/*
 {
     "version": "0.2.0",
     "configurations": [
@@ -25,22 +27,30 @@
         }
     ]
 }
-/*{
+*/
+/* windows */
+{
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C/C++",
+            "name": "g++.exe build and debug active file",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
-            "args": [],
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            //"args": [],
+            //"program": "cmd",
+            "args": [
+                "/C",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "&",
+                "pause"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,      //修改此项，让其弹出终端
             "MIMode": "gdb",
-            "miDebuggerPath":"C:/mingw64/bin/gdb.exe",
-            "preLaunchTask": "compile",
+            "miDebuggerPath": "C:\\mingw64\\bin\\gdb.exe",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -48,6 +58,7 @@
                     "ignoreFailures": true
                 }
             ],
-        },
+            "preLaunchTask": "task g++" //修改此项
+        }
     ]
-}*/
+}

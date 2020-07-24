@@ -1,3 +1,5 @@
+/* Linux */
+/*
 {
     "version": "2.0.0",
     "tasks": [
@@ -30,27 +32,29 @@
         }
     ]
 }
-/*
+*/
+/* Windows */
 {
     "version": "2.0.0",
     "tasks": [
         {
             "type": "shell",
-            "label": "compile",
-            "command": "gcc",
+            "label": "task g++",    //修改此项
+            "command": "C:\\mingw64\\bin\\g++.exe",
             "args": [
                 "-g",
                 "${file}",
+                "-lm",  //新增项-math
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
+            "options": {
+                "cwd": "C:\\mingw64\\bin"
+            },
             "problemMatcher": [
                 "$gcc"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "build"
         }
     ]
-}*/
+}
