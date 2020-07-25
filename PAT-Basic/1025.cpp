@@ -39,7 +39,6 @@ int main(int argc, char const *argv[])
         reverse(res.begin()+num/k*k,res.begin()+num-1);
     }
     */
-    //int next = res[0];
     for(int i=0; i<res.size(); i++){
         if(i == res.size()-1){
             //cout << setw(5) << setfill('0') <<mp[res[i]] << " " << res[i] << " -1" << endl;
