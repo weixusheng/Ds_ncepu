@@ -1,5 +1,5 @@
 /* Linux */
-/*
+
 {
     "version": "0.2.0",
     "configurations": [
@@ -27,8 +27,9 @@
         }
     ]
 }
-*/
+
 /* windows */
+/*
 {
     "version": "0.2.0",
     "configurations": [
@@ -62,3 +63,4 @@
         }
     ]
 }
+*/
