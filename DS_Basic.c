@@ -1734,7 +1734,7 @@ void crtMGraph(MGraph *G){
 //图的邻接表-边结点的定义
 typedef struct ArcNode{
     int adjvex;
-    struct adjvex *nextArc;
+    struct ArcNode *nextArc;
     //[WeightType info;]          //视情况而定
 }ArcNode;
 //图的邻接表-表头结点的定义
@@ -1800,7 +1800,7 @@ typedef struct{
     int vexNum, arcNum;
 }AMLGraph;
 
-//连通图的深度优先遍历-递归
+//连通图的深度优先遍历-递归     伪代码
 void DFSRecursion(MGraph g, int v, int visited[]){
     int w = 0;
     printf(v);
@@ -1814,7 +1814,7 @@ void DFSRecursion(MGraph g, int v, int visited[]){
     }
 }
 
-//连通图的深度优先遍历-非递归
+//连通图的深度优先遍历-非递归      伪代码
 void DFS(MGraph G, int v){
     SqStack s;
     initStack(&s,MAX);

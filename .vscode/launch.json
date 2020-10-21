@@ -1,4 +1,5 @@
 /* wsl */
+/*
 {
   "version": "0.2.0",
   "configurations": [
@@ -25,7 +26,7 @@
     }
   ]
 }
-
+*/
 /* Linux */
 /*
 {
@@ -57,7 +58,7 @@
 }
 */
 /* windows */
-/*
+
 {
     "version": "0.2.0",
     "configurations": [
@@ -91,4 +92,4 @@
         }
     ]
 }
-*/
+

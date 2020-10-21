@@ -17,19 +17,19 @@ struct treenode{
 };
 
 treenode* buildtree(vector<int> pre, vector<int> in, int p1,int p2, int i1, int i2){
-    if(p1>p2 || i1>i2){
+    if(p1>p2 || i1>i2){ //越界返回
         return NULL;
     }
-    treenode *root = new treenode();
-    root->data = pre[p1];
-    int leftlen = 0;
+    treenode *root = new treenode();    //新建节点
+    root->data = pre[p1];   //赋值当前根节点
+    int leftlen = 0;    //查找左子树元素数量
     for(int i=i1; i<=i2; i++){
         if(pre[p1] == in[i]){
-            leftlen = i-i1;
+            leftlen = i-i1; //直到查找到根节点的位置
             break;
         }
     }
-    root->left = buildtree(pre,in,p1+1, p1+1+leftlen-1, i1, i1+leftlen-1);
+    root->left = buildtree(pre, in, p1+1, p1+leftlen, i1, i1+leftlen-1);
     root->right = buildtree(pre, in, p1+leftlen+1, p2, i1+leftlen+1, i2);
     return root;
 }
