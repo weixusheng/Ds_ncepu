@@ -148,7 +148,7 @@ void dfs_list(ALGraph g, int v, int visited[]){
     visited[v] = 1;
     arcnode *p = g.vertices[v].first;
     while(p){
-        int i = g.vertices[p->adjvex].val;
+        int i = p->adjvex;
         if(visited[i] == 0){
             dfs_list(g, i, visited);
         }
@@ -163,14 +163,14 @@ void nonrecursive_dfs_matrix(MGraph g, int v, int visited[]){
     s.push(v);
     while(!s.empty()){
         int t = s.top();
+        printf("%d", g.vex[t]);
+        visited[t] = 1;
         for(int i=0; i<g.vexnum; i++){
             if(g.edge[t][i] != 0 && visited[i] == 0){
-                printf("%d", g.vex[i]);
-                visited[i] = 1;
                 s.push(i);
                 break;
             }
-            if(i == g.vexnum){
+            if(i == g.vexnum-1){
                 s.pop();
             }
         }
