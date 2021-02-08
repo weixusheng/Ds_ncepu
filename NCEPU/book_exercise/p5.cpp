@@ -158,7 +158,6 @@ void dfs_list(ALGraph g, int v, int visited[]){
 
 //邻接矩阵-非递归-dfs-默认非连同
 void nonrecursive_dfs_matrix(MGraph g, int v, int visited[]){
-    printf("%d", g.vex[v]);
     stack<int> s;
     s.push(v);
     while(!s.empty()){
@@ -228,8 +227,8 @@ void bfs_matrix(MGraph g, int v, int visited[]){
     while(!q.empty()){  //层序遍历
         int t = q.front();
         q.pop();
-        visited[v] = 1;
-        printf("%d", g.vex[v]);
+        visited[t] = 1;
+        printf("%d", g.vex[t]);
         for(int i=0; i<g.vexnum; i++){
             if(g.edge[t][i] != 0 && visited[i] == 0){
                 q.push(i);
